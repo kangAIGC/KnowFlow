@@ -1,0 +1,78 @@
+name: Deploy to GitHub Pages
+
+# 单 main 分支最简流程:push 到 main 即自动构建 + 发布 Pages。
+# 也可手动 workflow_dispatch 重跑。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# GitHub Actions Pages 权限模板(官方 pages-artifact + deploy-pages 需要)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 避免并发下多次部署互相覆盖
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Next.js (static export)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Enable Corepack (pnpm)
+        run: corepack enable
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Next.js (output: export)
+        env:
+          # 用仓库真实名称动态生成 basePath,换 fork/换仓库名不用改代码。
+          # NEXT_PUBLIC_* 前缀会被 Next.js 内联进客户端 JS 包。
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          NEXT_PUBLIC_REPO_NAME: ${{ github.event.repository.name }}
+          NEXT_PUBLIC_STATIC_EXPORT: "true"
+          # 若未来接入 Dify,把 Secrets 注入到这里(当前 mock 分支不会读取这些)。
+          # DIFY_API_BASE_URL: ${{ secrets.DIFY_API_BASE_URL }}
+          # DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
+        run: pnpm build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Next.js output: "export" 默认产物目录就是 ./out
+          path: ./out
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
