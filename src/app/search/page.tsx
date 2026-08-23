@@ -18,10 +18,19 @@ import {
   ImageIcon,
   Library,
   Trash2,
+  Eye,
+  Download,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { applyBasePath } from "@/lib/utils";
 
 type Mode = "upload" | "standard" | "atlas";
@@ -40,6 +49,12 @@ interface KnowledgeBaseItem {
   title: string;
   fileId?: string;
   category: "standard" | "atlas";
+  /**
+   * public 目录下真实 PDF 文件名(用于在线预览与下载)。
+   * 仅对入库到本地 public 目录的初始规范/图集文档设置;
+   * 用户通过 Dify 上传入库的条目不带该字段,因此不显示预览/下载按钮。
+   */
+  fileName?: string;
 }
 
 interface UploadStatus {
@@ -191,13 +206,18 @@ function SearchContent() {
       id: "kb-init-1",
       title: "GB 55037-2022 建筑防火通用规范-带条文说明",
       category: "standard",
+      fileName: "!! GB 55037-2022 建筑防火通用规范-带条文说明.pdf",
     },
     {
       id: "kb-init-2",
       title: "00SJ202建筑坡屋面构造",
       category: "atlas",
+      fileName: "00SJ202建筑坡屋面构造.pdf",
     },
   ]);
+
+  // 当前正在预览的知识库条目;为 null 时预览弹窗关闭。
+  const [previewKb, setPreviewKb] = useState<KnowledgeBaseItem | null>(null);
 
   const [conversationId, setConversationId] = useState<Record<Mode, string>>({
     upload: "",
@@ -1155,6 +1175,30 @@ function SearchContent() {
                         <span className="shrink-0 text-xs text-muted-foreground">
                           {kb.category === "atlas" ? "图集" : "规范"}
                         </span>
+                        {kb.fileName && (
+                          <>
+                            <button
+                              type="button"
+                              title={`预览「${kb.title}」`}
+                              aria-label={`预览 ${kb.title}`}
+                              onClick={() => setPreviewKb(kb)}
+                              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-60 transition-all hover:bg-primary/10 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-1"
+                            >
+                              <Eye className="h-3 w-3" />
+                            </button>
+                            <a
+                              href={applyBasePath(
+                                `/${encodeURIComponent(kb.fileName)}`
+                              )}
+                              download={kb.fileName}
+                              title={`下载「${kb.title}」`}
+                              aria-label={`下载 ${kb.title}`}
+                              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-60 transition-all hover:bg-primary/10 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-1"
+                            >
+                              <Download className="h-3 w-3" />
+                            </a>
+                          </>
+                        )}
                         <button
                           type="button"
                           title={`从已入库中移除「${kb.title}」`}
@@ -1185,6 +1229,46 @@ function SearchContent() {
           </div>
         </main>
       </div>
+
+      {/* 文档在线预览弹窗:用 iframe 加载 public 目录下的 PDF,浏览器原生渲染 */}
+      <Dialog
+        open={previewKb !== null}
+        onOpenChange={(open) => {
+          if (!open) setPreviewKb(null);
+        }}
+      >
+        <DialogContent className="flex h-[88vh] w-[calc(100%-2rem)] max-w-[1100px] flex-col gap-3 p-4 sm:p-5">
+          <DialogHeader className="flex flex-row items-start justify-between gap-3 space-y-0 sm:flex-row">
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <DialogTitle className="truncate text-base font-semibold">
+                {previewKb?.title ?? "文档预览"}
+              </DialogTitle>
+              <DialogDescription className="truncate text-xs">
+                {previewKb?.fileName ?? ""}
+              </DialogDescription>
+            </div>
+            {previewKb?.fileName && (
+              <a
+                href={applyBasePath(
+                  `/${encodeURIComponent(previewKb.fileName)}`
+                )}
+                download={previewKb.fileName}
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                <Download className="h-3.5 w-3.5" />
+                下载
+              </a>
+            )}
+          </DialogHeader>
+          {previewKb?.fileName && (
+            <iframe
+              src={applyBasePath(`/${encodeURIComponent(previewKb.fileName)}`)}
+              title={previewKb.title}
+              className="h-full w-full flex-1 rounded-md border border-border bg-muted/30"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
