@@ -47,16 +47,11 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      # next.config.ts 中 REPO_NAME 默认值就是 KnowFlow，和仓库名一致，
+      # 因此 GitHub Pages 部署到 /KnowFlow 子路径下无需在 workflow 里再传 env，
+      # 直接构建即可（去掉此处 env 避免 GitHub Actions YAML Parser 在多行注释/特殊字符
+      # 组合下误判为 Invalid workflow file）。
       - name: Build with Next.js (output: export)
-        env:
-          # 本仓库名固定为 KnowFlow,此处写死对应的 basePath 前缀与仓库名,
-          # 从而在 workflow YAML 中彻底避免出现 ${{ }} 表达式与 / 相邻的场景,
-          # 防止 GitHub Actions YAML Parser 误判 Invalid workflow file。
-          # 如果未来 fork 到其他仓库名下,请把下方两行中的 /KnowFlow / KnowFlow
-          # 同时改成对应仓库名即可,并同步修改 next.config.ts 中的 REPO_NAME 默认值。
-          NEXT_PUBLIC_BASE_PATH: "/KnowFlow"
-          NEXT_PUBLIC_REPO_NAME: "KnowFlow"
-          NEXT_PUBLIC_STATIC_EXPORT: "true"
         run: pnpm build
 
       - name: Upload Pages artifact
