@@ -1,19 +1,15 @@
 name: Deploy to GitHub Pages
 
-# 单 main 分支最简流程:push 到 main 即自动构建 + 发布 Pages。
-# 也可手动 workflow_dispatch 重跑。
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-# GitHub Actions Pages 权限模板(官方 pages-artifact + deploy-pages 需要)
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 避免并发下多次部署互相覆盖
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -31,7 +27,7 @@ jobs:
         with:
           node-version: 24
 
-      - name: Enable Corepack (pnpm)
+      - name: Enable Corepack
         run: corepack enable
 
       - name: Setup pnpm
@@ -40,24 +36,19 @@ jobs:
           version: 9
           run_install: false
 
-      - name: Install dependencies (frozen lockfile)
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
 
-      # next.config.ts 中 REPO_NAME 默认值就是 KnowFlow，和仓库名一致，
-      # 因此 GitHub Pages 部署到 /KnowFlow 子路径下无需在 workflow 里再传 env，
-      # 直接构建即可（去掉此处 env 避免 GitHub Actions YAML Parser 在多行注释/特殊字符
-      # 组合下误判为 Invalid workflow file）。
-      - name: Build with Next.js (output: export)
+      - name: Build site
         run: pnpm build
 
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Next.js output: "export" 默认产物目录就是 ./out
           path: ./out
 
   deploy:
