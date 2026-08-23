@@ -1238,27 +1238,13 @@ function SearchContent() {
         }}
       >
         <DialogContent className="flex h-[88vh] w-[calc(100%-2rem)] max-w-[1100px] flex-col gap-3 p-4 sm:p-5">
-          <DialogHeader className="flex flex-row items-start justify-between gap-3 space-y-0 sm:flex-row">
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <DialogTitle className="truncate text-base font-semibold">
-                {previewKb?.title ?? "文档预览"}
-              </DialogTitle>
-              <DialogDescription className="truncate text-xs">
-                {previewKb?.fileName ?? ""}
-              </DialogDescription>
-            </div>
-            {previewKb?.fileName && (
-              <a
-                href={applyBasePath(
-                  `/${encodeURIComponent(previewKb.fileName)}`
-                )}
-                download={previewKb.fileName}
-                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                <Download className="h-3.5 w-3.5" />
-                下载
-              </a>
-            )}
+          <DialogHeader className="space-y-0.5">
+            <DialogTitle className="truncate pr-8 text-base font-semibold">
+              {previewKb?.title ?? "文档预览"}
+            </DialogTitle>
+            <DialogDescription className="truncate pr-8 text-xs">
+              {previewKb?.fileName ?? ""}
+            </DialogDescription>
           </DialogHeader>
           {previewKb?.fileName && (
             <iframe
