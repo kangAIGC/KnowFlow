@@ -22,6 +22,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import { applyBasePath } from "@/lib/utils";
 
 type Mode = "upload" | "standard" | "atlas";
 
@@ -64,34 +65,6 @@ function transformDifyImageUrl(src: string): string {
   }
   if (src.startsWith("/files/") || src.startsWith("/api/files/")) {
     return `/dify${src}`;
-  }
-  return src;
-}
-
-/**
- * GitHub Pages 静态导出部署在仓库子路径下时(basePath = /<repo>)，
- * ReactMarkdown 输出的原生 <img src="/mock-atlas/..."> 不会自动加 basePath 前缀，
- * 会导致资源 404。这里对本地静态路径统一补 basePath 前缀。
- *
- * 约定 basePath 同时存在于：
- *   - next.config.ts 的 basePath(= process.env.NEXT_PUBLIC_REPO_NAME || 'KnowFlow')
- *   - 此处的 NEXT_PUBLIC_BASE_PATH（GitHub Actions 构建时会显式传入，保证一致）
- */
-function applyBasePath(src: string): string {
-  if (!src) return src;
-  if (
-    src.startsWith("http://") ||
-    src.startsWith("https://") ||
-    src.startsWith("data:") ||
-    src.startsWith("//")
-  ) {
-    return src;
-  }
-  if (!src.startsWith("/")) return src;
-  const base = process.env.NEXT_PUBLIC_BASE_PATH || "/KnowFlow";
-  if (base && base !== "/") {
-    if (src === base || src.startsWith(`${base}/`)) return src;
-    return `${base}${src}`;
   }
   return src;
 }

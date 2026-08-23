@@ -1,3 +1,5 @@
+import { applyBasePath } from "@/lib/utils";
+
 interface SearchCardProps {
   title: string;
   description: string;
@@ -15,6 +17,8 @@ export default function SearchCard({
   imageHeight = "h-40",
   hideWatermark = false,
 }: SearchCardProps) {
+  const resolvedImageSrc = applyBasePath(image);
+
   return (
     <div className="flex flex-col items-center">
       <div className="group relative flex h-72 w-full flex-col overflow-hidden rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-muted/50">
@@ -32,7 +36,7 @@ export default function SearchCard({
         <div className="flex flex-1 items-end justify-center pb-2">
           <div className={`${imageHeight} w-full flex items-end justify-center relative`}>
             <img
-              src={image}
+              src={resolvedImageSrc}
               alt=""
               className="h-full w-auto object-contain"
               title=""
