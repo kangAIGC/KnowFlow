@@ -49,15 +49,14 @@ jobs:
 
       - name: Build with Next.js (output: export)
         env:
-          # 用仓库真实名称动态生成 basePath,换 fork/换仓库名不用改代码。
-          # NEXT_PUBLIC_* 前缀会被 Next.js 内联进客户端 JS 包。
-          # 注意：YAML 中值含 '/'、'${{ }}' 等特殊字符时必须用双引号包裹,
-          # 否则 Actions YAML parser 会报 Invalid workflow file。
-          NEXT_PUBLIC_BASE_PATH: "/${{ github.event.repository.name }}"
-          NEXT_PUBLIC_REPO_NAME: "${{ github.event.repository.name }}"
+          # 本仓库名固定为 KnowFlow,此处写死对应的 basePath 前缀与仓库名,
+          # 从而在 workflow YAML 中彻底避免出现 ${{ }} 表达式与 / 相邻的场景,
+          # 防止 GitHub Actions YAML Parser 误判 Invalid workflow file。
+          # 如果未来 fork 到其他仓库名下,请把下方两行中的 /KnowFlow / KnowFlow
+          # 同时改成对应仓库名即可,并同步修改 next.config.ts 中的 REPO_NAME 默认值。
+          NEXT_PUBLIC_BASE_PATH: "/KnowFlow"
+          NEXT_PUBLIC_REPO_NAME: "KnowFlow"
           NEXT_PUBLIC_STATIC_EXPORT: "true"
-          # 未来接入 Dify 时在 Secrets 里添加 DIFY_API_BASE_URL / DIFY_API_KEY,
-          # 并将对应两行取消注释即可(不再保留占位的 secrets 表达式避免 YAML 误解析)。
         run: pnpm build
 
       - name: Upload Pages artifact
