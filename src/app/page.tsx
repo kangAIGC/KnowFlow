@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FileText, Image as ImageIcon, Database } from 'lucide-react';
+import { BookOpen, Image as ImageIcon, Database } from 'lucide-react';
 import Header from '@/components/header';
 import SearchCard from '@/components/search-card';
 import { useMounted } from '@/hooks/use-mounted';
@@ -48,7 +48,8 @@ export default function Home() {
               title="规范检索"
               description="基于 Agentic RAG 构建规范知识库，支持多轮推理与条文溯源，实现规范问答的智能回答"
               image="/ill-4.png"
-              icon={<FileText className="h-5 w-5" />}
+              icon={<BookOpen className="h-5 w-5" />}
+              iconClassName="bg-destructive/10 text-destructive"
               imageHeight="h-40"
             />
           </Link>

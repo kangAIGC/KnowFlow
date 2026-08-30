@@ -5,6 +5,8 @@ interface SearchCardProps {
   description: string;
   image: string;
   icon: React.ReactNode;
+  /** 图标底色样式,默认 primary 灰蓝;可传 destructive 系覆盖为红色系 */
+  iconClassName?: string;
   imageHeight?: string;
   hideWatermark?: boolean;
 }
@@ -14,6 +16,7 @@ export default function SearchCard({
   description,
   image,
   icon,
+  iconClassName = "bg-primary/10 text-primary",
   imageHeight = "h-40",
   hideWatermark = false,
 }: SearchCardProps) {
@@ -24,7 +27,9 @@ export default function SearchCard({
       <div className="group relative flex h-72 w-full flex-col overflow-hidden rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-muted/50">
         {/* Title with Icon */}
         <div className="mb-4 flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <div
+            className={`flex h-8 w-8 items-center justify-center rounded-lg ${iconClassName}`}
+          >
             {icon}
           </div>
           <h3 className="text-lg font-bold tracking-wide text-foreground uppercase">
