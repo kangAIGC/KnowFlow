@@ -41,6 +41,7 @@ import {
 } from "@/components/knowledge/file-views";
 import { PreviewDialog } from "@/components/knowledge/knowledge-dialogs";
 import {
+  FOLDERS,
   FOLDER_LABELS,
   INITIAL_FILES,
   downloadVirtualFile,
@@ -89,6 +90,13 @@ export default function KnowledgePage() {
   const [uploadTask, setUploadTask] = useState<UploadTask | null>(null);
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const [previewFile, setPreviewFile] = useState<KnowledgeFile | null>(null);
+  // 导入目标知识库:跟随侧栏选中(「全部」时保持上次选择),可手动下拉覆盖
+  const [uploadFolder, setUploadFolder] = useState<FolderId>("standard");
+
+  // 侧栏切到具体知识库时,导入目标同步跟随
+  useEffect(() => {
+    if (selectedFolder !== "all") setUploadFolder(selectedFolder);
+  }, [selectedFolder]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -212,10 +220,9 @@ export default function KnowledgePage() {
               clearInterval(uploadTimerRef.current);
               uploadTimerRef.current = null;
             }
-            // 上传完成:入库(选中「全部」时归入规范)
+            // 上传完成:入库(目标为下拉选择的知识库)
             const rawName = file.name.replace(/\.pdf$/i, "") || "未命名文档";
-            const folder: FolderId =
-              selectedFolder === "all" ? "standard" : selectedFolder;
+            const folder: FolderId = uploadFolder;
             setFiles((prev) => [
               {
                 id: `kf-upload-${++idRef.current}`,
@@ -237,7 +244,7 @@ export default function KnowledgePage() {
         });
       }, 120);
     },
-    [selectedFolder, showStatus]
+    [uploadFolder, showStatus]
   );
 
   const handleUploadClick = () => fileInputRef.current?.click();
@@ -309,6 +316,23 @@ export default function KnowledgePage() {
             </div>
 
             <div className="ml-auto flex flex-wrap items-center gap-2">
+              {/* 导入目标知识库:下拉选择 规范/图集 */}
+              <Select
+                value={uploadFolder}
+                onValueChange={(v) => setUploadFolder(v as FolderId)}
+              >
+                <SelectTrigger className="h-9 w-[100px] text-xs" aria-label="导入到">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {FOLDERS.map((f) => (
+                    <SelectItem key={f.id} value={f.id} className="text-xs">
+                      {f.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               {/* 排序 */}
               <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
                 <SelectTrigger className="h-9 w-[150px] text-xs" aria-label="排序方式">
@@ -355,11 +379,11 @@ export default function KnowledgePage() {
                 </button>
               </div>
 
-              {/* 导入文件(PDF 上传):红色描边统一风格 */}
+              {/* 导入文件(PDF 上传):深红实心 */}
               <Button
-                variant="outline"
+                variant="destructive"
                 size="sm"
-                className="h-9 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                className="h-9 gap-1.5"
                 onClick={handleUploadClick}
                 disabled={uploadTask !== null}
               >
