@@ -19,12 +19,20 @@ import {
   ChevronRight,
   PanelLeft,
   SearchX,
+  BookOpen,
+  Image as ImageIcon,
 } from "lucide-react";
 import Header from "@/components/header";
 import { useMounted } from "@/hooks/use-mounted";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -41,7 +49,6 @@ import {
 } from "@/components/knowledge/file-views";
 import { PreviewDialog } from "@/components/knowledge/knowledge-dialogs";
 import {
-  FOLDERS,
   FOLDER_LABELS,
   INITIAL_FILES,
   downloadVirtualFile,
@@ -90,13 +97,8 @@ export default function KnowledgePage() {
   const [uploadTask, setUploadTask] = useState<UploadTask | null>(null);
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const [previewFile, setPreviewFile] = useState<KnowledgeFile | null>(null);
-  // 导入目标知识库:跟随侧栏选中(「全部」时保持上次选择),可手动下拉覆盖
-  const [uploadFolder, setUploadFolder] = useState<FolderId>("standard");
-
-  // 侧栏切到具体知识库时,导入目标同步跟随
-  useEffect(() => {
-    if (selectedFolder !== "all") setUploadFolder(selectedFolder);
-  }, [selectedFolder]);
+  // 本次导入的目标知识库,由「导入规范/导入图集」菜单项写入
+  const importTargetRef = useRef<FolderId>("standard");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -220,9 +222,9 @@ export default function KnowledgePage() {
               clearInterval(uploadTimerRef.current);
               uploadTimerRef.current = null;
             }
-            // 上传完成:入库(目标为下拉选择的知识库)
+            // 上传完成:入库(目标为菜单中选择的知识库)
             const rawName = file.name.replace(/\.pdf$/i, "") || "未命名文档";
-            const folder: FolderId = uploadFolder;
+            const folder: FolderId = importTargetRef.current;
             setFiles((prev) => [
               {
                 id: `kf-upload-${++idRef.current}`,
@@ -244,10 +246,14 @@ export default function KnowledgePage() {
         });
       }, 120);
     },
-    [uploadFolder, showStatus]
+    [showStatus]
   );
 
-  const handleUploadClick = () => fileInputRef.current?.click();
+  /** 菜单选择导入目标后,打开文件选择器 */
+  const handleImportInto = (folder: FolderId) => {
+    importTargetRef.current = folder;
+    fileInputRef.current?.click();
+  };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -316,23 +322,6 @@ export default function KnowledgePage() {
             </div>
 
             <div className="ml-auto flex flex-wrap items-center gap-2">
-              {/* 导入目标知识库:下拉选择 规范/图集 */}
-              <Select
-                value={uploadFolder}
-                onValueChange={(v) => setUploadFolder(v as FolderId)}
-              >
-                <SelectTrigger className="h-9 w-[100px] text-xs" aria-label="导入到">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {FOLDERS.map((f) => (
-                    <SelectItem key={f.id} value={f.id} className="text-xs">
-                      {f.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
               {/* 排序 */}
               <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
                 <SelectTrigger className="h-9 w-[150px] text-xs" aria-label="排序方式">
@@ -379,17 +368,30 @@ export default function KnowledgePage() {
                 </button>
               </div>
 
-              {/* 导入文件(PDF 上传):深红实心 */}
-              <Button
-                variant="destructive"
-                size="sm"
-                className="h-9 gap-1.5"
-                onClick={handleUploadClick}
-                disabled={uploadTask !== null}
-              >
-                <Upload className="h-4 w-4" />
-                导入文件
-              </Button>
+              {/* 导入文件:深红实心,点击弹出 导入规范/导入图集 两个选项 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-9 gap-1.5"
+                    disabled={uploadTask !== null}
+                  >
+                    <Upload className="h-4 w-4" />
+                    导入文件
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onSelect={() => handleImportInto("standard")}>
+                    <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    导入规范
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleImportInto("atlas")}>
+                    <ImageIcon className="h-4 w-4 text-destructive" />
+                    导入图集
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <input
                 ref={fileInputRef}
                 type="file"
