@@ -12,16 +12,16 @@ import { cn } from "@/lib/utils";
 /** 侧栏可选项:全部(all,聚合两库)或单个知识库 */
 export type SidebarSelection = "all" | FolderId;
 
-/** 两个顶级知识库的视觉区分:规范=蓝色书本,图集=红色图片(与站点主红色一致,不用橙色) */
+/** 规范/图集统一红色系:仅以图标形状区分(书本/图片),配色与站点主色一致 */
 const FOLDER_UI: Record<
   FolderId,
   { icon: LucideIcon; iconCls: string; activeCls: string }
 > = {
   standard: {
     icon: BookOpen,
-    iconCls: "text-blue-600 dark:text-blue-400",
+    iconCls: "text-destructive",
     activeCls:
-      "bg-blue-500/10 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500/30",
+      "bg-destructive/10 text-destructive dark:text-red-300 ring-1 ring-destructive/30",
   },
   atlas: {
     icon: ImageIcon,

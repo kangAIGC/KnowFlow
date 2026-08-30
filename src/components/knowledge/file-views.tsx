@@ -14,13 +14,13 @@ import {
 } from "@/lib/knowledge-data";
 import { cn } from "@/lib/utils";
 
-/** 规范=蓝色书本徽章,图集=红色图片徽章(与站点主红色一致,不用橙色),列表与网格视图共用 */
+/** 规范/图集统一红色系徽章,以图标形状区分(书本/图片),与站点主色一致 */
 const FOLDER_BADGES: Record<
   FolderId,
   { badgeCls: string; icon: LucideIcon }
 > = {
   standard: {
-    badgeCls: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    badgeCls: "bg-destructive/10 text-destructive dark:text-red-300",
     icon: BookOpen,
   },
   atlas: {

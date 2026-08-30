@@ -389,7 +389,7 @@ export default function KnowledgePage() {
                     onClick={() => handleImportInto("standard")}
                     className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-muted"
                   >
-                    <BookOpen className="h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
+                    <BookOpen className="h-4 w-4 shrink-0 text-destructive" />
                     导入规范
                   </button>
                   <button

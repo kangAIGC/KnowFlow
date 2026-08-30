@@ -50,8 +50,8 @@ export const KIND_LABELS: Record<FileKind, string> = {
 /** 文件类型图标配色(图标背景 / 图标前景) */
 export const KIND_COLORS: Record<FileKind, string> = {
   pdf: "bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400",
-  doc: "bg-blue-100 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400",
-  docx: "bg-blue-100 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400",
+  doc: "bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400",
+  docx: "bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400",
   txt: "bg-muted text-muted-foreground",
 };
 
