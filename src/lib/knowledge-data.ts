@@ -2,12 +2,11 @@ import { applyBasePath } from "@/lib/utils";
 
 /** 知识库管理模块 - 类型与数据定义 */
 
-export type FolderId = "all" | "standard" | "atlas";
-export type RealFolderId = Exclude<FolderId, "all">;
+export type FolderId = "standard" | "atlas";
 export type FileKind = "pdf" | "doc" | "docx" | "txt";
 
 export interface FolderNode {
-  id: RealFolderId;
+  id: FolderId;
   name: string;
 }
 
@@ -16,7 +15,7 @@ export interface KnowledgeFile {
   /** 展示名称(不含扩展名) */
   name: string;
   kind: FileKind;
-  folder: RealFolderId;
+  folder: FolderId;
   sizeKB: number;
   /** 展示用修改日期(固定字符串,避免 SSR/CSR 水合不一致) */
   modifiedLabel: string;
@@ -32,13 +31,13 @@ export interface KnowledgeFile {
 }
 
 export const FOLDERS: FolderNode[] = [
-  { id: "standard", name: "建筑规范知识库" },
-  { id: "atlas", name: "建筑图集知识库" },
+  { id: "standard", name: "规范知识库" },
+  { id: "atlas", name: "图集知识库" },
 ];
 
-export const FOLDER_LABELS: Record<RealFolderId, string> = {
-  standard: "建筑规范知识库",
-  atlas: "建筑图集知识库",
+export const FOLDER_LABELS: Record<FolderId, string> = {
+  standard: "规范知识库",
+  atlas: "图集知识库",
 };
 
 export const KIND_LABELS: Record<FileKind, string> = {

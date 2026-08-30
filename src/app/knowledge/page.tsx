@@ -53,7 +53,6 @@ import {
   type FileKind,
   type FolderId,
   type KnowledgeFile,
-  type RealFolderId,
 } from "@/lib/knowledge-data";
 import { cn } from "@/lib/utils";
 
@@ -94,7 +93,7 @@ export default function KnowledgePage() {
   const mounted = useMounted();
 
   const [files, setFiles] = useState<KnowledgeFile[]>(INITIAL_FILES);
-  const [selectedFolder, setSelectedFolder] = useState<FolderId>("all");
+  const [selectedFolder, setSelectedFolder] = useState<FolderId>("standard");
   const [query, setQuery] = useState("");
   const [searchScope, setSearchScope] = useState<SearchScope>("name");
   const [sortKey, setSortKey] = useState<SortKey>("modified-desc");
@@ -128,10 +127,9 @@ export default function KnowledgePage() {
     statusTimerRef.current = setTimeout(() => setStatus(null), 3000);
   }, []);
 
-  // 各文件夹计数(实时派生,新增/删除后自动更新)
+  // 各知识库计数(实时派生,新增/删除后自动更新)
   const counts = useMemo(
     () => ({
-      all: files.length,
       standard: files.filter((f) => f.folder === "standard").length,
       atlas: files.filter((f) => f.folder === "atlas").length,
     }),
@@ -142,7 +140,7 @@ export default function KnowledgePage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = files.filter((f) => {
-      if (selectedFolder !== "all" && f.folder !== selectedFolder) return false;
+      if (f.folder !== selectedFolder) return false;
       if (typeFilter !== "all" && f.kind !== typeFilter) return false;
       if (!q) return true;
       if (searchScope === "name") return f.name.toLowerCase().includes(q);
@@ -235,8 +233,7 @@ export default function KnowledgePage() {
             }
             // 上传完成:入库
             const rawName = file.name.replace(/\.pdf$/i, "") || "未命名文档";
-            const folder: RealFolderId =
-              selectedFolder === "all" ? "standard" : selectedFolder;
+            const folder: FolderId = selectedFolder;
             setFiles((prev) => [
               {
                 id: `kf-upload-${++idRef.current}`,
@@ -281,7 +278,7 @@ export default function KnowledgePage() {
   /* ---------------- 新建文件 ---------------- */
 
   const handleCreate = useCallback(
-    (input: { name: string; kind: FileKind; folder: RealFolderId; content: string }) => {
+    (input: { name: string; kind: FileKind; folder: FolderId; content: string }) => {
       setFiles((prev) => [
         {
           id: `kf-new-${++idRef.current}`,
@@ -327,13 +324,7 @@ export default function KnowledgePage() {
             >
               <PanelLeft className="h-4 w-4" />
             </button>
-            <span className="font-semibold text-foreground">全部文档</span>
-            <span className="text-muted-foreground">知识库</span>
-            <span className="text-muted-foreground">›</span>
-            <span className="text-muted-foreground">
-              {selectedFolder === "all" ? "全部文件夹" : FOLDER_LABELS[selectedFolder]}
-            </span>
-            <span className="ml-auto hidden text-xs text-muted-foreground sm:block">
+            <span className="ml-auto text-xs text-muted-foreground sm:ml-0">
               共 {filtered.length} 个文档
             </span>
           </div>
@@ -563,7 +554,6 @@ export default function KnowledgePage() {
                   onClick={() => {
                     setQuery("");
                     setTypeFilter("all");
-                    setSelectedFolder("all");
                   }}
                 >
                   清除筛选条件
@@ -652,7 +642,7 @@ export default function KnowledgePage() {
       <NewFileDialog
         open={newDialogOpen}
         onOpenChange={setNewDialogOpen}
-        defaultFolder={selectedFolder === "all" ? "standard" : selectedFolder}
+        defaultFolder={selectedFolder}
         onCreate={handleCreate}
       />
       <PreviewDialog file={previewFile} onOpenChange={(o) => !o && setPreviewFile(null)} />

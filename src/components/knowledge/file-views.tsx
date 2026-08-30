@@ -1,6 +1,7 @@
 "use client";
 
-import { Eye, Download, Trash2, FileText } from "lucide-react";
+import { Eye, Download, Trash2, FileText, BookOpen, Image as ImageIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   FOLDER_LABELS,
   KIND_COLORS,
@@ -8,9 +9,41 @@ import {
   contentSnippet,
   formatSize,
   splitHighlight,
+  type FolderId,
   type KnowledgeFile,
 } from "@/lib/knowledge-data";
 import { cn } from "@/lib/utils";
+
+/** 规范=蓝色书本徽章,图集=橙色图片徽章,列表与网格视图共用 */
+const FOLDER_BADGES: Record<
+  FolderId,
+  { badgeCls: string; icon: LucideIcon }
+> = {
+  standard: {
+    badgeCls: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    icon: BookOpen,
+  },
+  atlas: {
+    badgeCls: "bg-orange-500/10 text-orange-700 dark:text-orange-300",
+    icon: ImageIcon,
+  },
+};
+
+function FolderBadge({ folder }: { folder: FolderId }) {
+  const meta = FOLDER_BADGES[folder];
+  const Icon = meta.icon;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium",
+        meta.badgeCls
+      )}
+    >
+      <Icon className="h-3 w-3" />
+      {FOLDER_LABELS[folder]}
+    </span>
+  );
+}
 
 /** 关键词高亮文本 */
 function HighlightText({ text, query }: { text: string; query: string }) {
@@ -155,9 +188,7 @@ export function FileListView({
                   </div>
                 </td>
                 <td className="hidden px-4 py-3 md:table-cell">
-                  <span className="inline-flex rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    {FOLDER_LABELS[file.folder]}
-                  </span>
+                  <FolderBadge folder={file.folder} />
                 </td>
                 <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground sm:table-cell">
                   {file.modifiedLabel}
@@ -204,9 +235,7 @@ export function FileGridView({
           >
             <div className="flex items-start justify-between gap-2">
               <KindIcon file={file} />
-              <span className="inline-flex rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                {FOLDER_LABELS[file.folder]}
-              </span>
+              <FolderBadge folder={file.folder} />
             </div>
             <div className="mt-3 line-clamp-2 min-h-[2.5rem] font-medium text-foreground">
               <HighlightText text={file.name} query={query} />

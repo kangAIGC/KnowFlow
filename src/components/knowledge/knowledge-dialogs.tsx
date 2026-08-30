@@ -27,8 +27,8 @@ import {
   buildVirtualContent,
   realFileUrl,
   type FileKind,
+  type FolderId,
   type KnowledgeFile,
-  type RealFolderId,
 } from "@/lib/knowledge-data";
 
 /* ---------------- 新建文件 ---------------- */
@@ -37,11 +37,11 @@ export interface NewFileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** 打开时默认选中的文件夹 */
-  defaultFolder: RealFolderId;
+  defaultFolder: FolderId;
   onCreate: (input: {
     name: string;
     kind: FileKind;
-    folder: RealFolderId;
+    folder: FolderId;
     content: string;
   }) => void;
 }
@@ -56,7 +56,7 @@ export function NewFileDialog({
 }: NewFileDialogProps) {
   const [name, setName] = useState("");
   const [kind, setKind] = useState<FileKind>("docx");
-  const [folder, setFolder] = useState<RealFolderId>(defaultFolder);
+  const [folder, setFolder] = useState<FolderId>(defaultFolder);
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -137,7 +137,7 @@ export function NewFileDialog({
               <span className="text-sm font-medium">所属文件夹</span>
               <Select
                 value={folder}
-                onValueChange={(v) => setFolder(v as RealFolderId)}
+                onValueChange={(v) => setFolder(v as FolderId)}
               >
                 <SelectTrigger aria-label="所属文件夹">
                   <SelectValue />
