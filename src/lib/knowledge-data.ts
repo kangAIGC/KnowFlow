@@ -55,97 +55,28 @@ export const KIND_COLORS: Record<FileKind, string> = {
   txt: "bg-muted text-muted-foreground",
 };
 
+/** 初始数据:public/pdf 目录下的真实规范文档(全部归入「规范」知识库) */
 export const INITIAL_FILES: KnowledgeFile[] = [
-  {
-    id: "kf-1",
-    name: "GB 55037-2022 建筑防火通用规范-带条文说明",
-    kind: "pdf",
-    folder: "standard",
-    sizeKB: 3842,
-    modifiedLabel: "2026/8/20",
-    modifiedTs: 1787500000000,
-    fileName: "!! GB 55037-2022 建筑防火通用规范-带条文说明.pdf",
-    content:
-      "建筑防火通用规范。总则:为预防建筑火灾、减小火灾危害,保护人身和财产安全,制定本规范。耐火等级:建筑构件的燃烧性能和耐火极限应符合规定。防火分区:高层民用建筑防火分区最大允许建筑面积应符合要求。安全疏散:疏散门应向疏散方向开启,疏散楼梯宽度应满足疏散时间要求。",
-  },
-  {
-    id: "kf-2",
-    name: "00SJ202 建筑坡屋面构造",
-    kind: "pdf",
-    folder: "atlas",
-    sizeKB: 2610,
-    modifiedLabel: "2026/8/20",
-    modifiedTs: 1787500000000,
-    fileName: "00SJ202建筑坡屋面构造.pdf",
-    content:
-      "建筑坡屋面构造图集。屋面檐沟详图:檐沟、天沟节点构造,卷材防水层收头处理。挂瓦条、顺水条安装间距要求。坡屋面排水坡度与瓦材选择对应表。",
-  },
-  {
-    id: "kf-3",
-    name: "建筑设计防火规范 GB50016 条文摘录",
-    kind: "pdf",
-    folder: "standard",
-    sizeKB: 96,
-    modifiedLabel: "2026/8/12",
-    modifiedTs: 1786500000000,
-    content:
-      "防火分区与防火间距摘录:厂房防火分区最大允许建筑面积与耐火等级对应关系。疏散楼梯的净宽度不应小于1.1米。消防车道净宽、净高均不应小于4米。",
-  },
-  {
-    id: "kf-4",
-    name: "民用建筑设计统一标准 GB50352 学习笔记",
-    kind: "pdf",
-    folder: "standard",
-    sizeKB: 148,
-    modifiedLabel: "2026/8/8",
-    modifiedTs: 1785900000000,
-    content:
-      "学习笔记:建筑物理环境、无障碍设计、楼梯台阶宽度和栏杆高度等通用规定摘录。坡屋面檐口、檐沟排水构造的相关条文引用。",
-  },
-  {
-    id: "kf-5",
-    name: "屋面工程技术规范 GB50340 要点整理",
-    kind: "pdf",
-    folder: "standard",
-    sizeKB: 88,
-    modifiedLabel: "2026/7/30",
-    modifiedTs: 1784800000000,
-    content:
-      "屋面工程防水等级与设防要求。卷材防水屋面檐沟、天沟纵向找坡不应小于1%。涂膜防水层的平均厚度应符合设计要求。",
-  },
-  {
-    id: "kf-6",
-    name: "坡屋面构造详图集摘要",
-    kind: "pdf",
-    folder: "atlas",
-    sizeKB: 132,
-    modifiedLabel: "2026/7/26",
-    modifiedTs: 1784400000000,
-    content:
-      "图集摘要:坡屋面檐沟详图索引、挂瓦条剖面、屋脊节点、泛水收头等常用构造做法一览。",
-  },
-  {
-    id: "kf-7",
-    name: "檐沟天沟构造节点手册",
-    kind: "pdf",
-    folder: "atlas",
-    sizeKB: 640,
-    modifiedLabel: "2026/7/18",
-    modifiedTs: 1783600000000,
-    content:
-      "节点手册:金属檐沟安装节点、成品天沟与落水口连接、女儿墙泛水与天沟交接处防水增强处理。",
-  },
-  {
-    id: "kf-8",
-    name: "建筑坡屋面排水设计说明",
-    kind: "pdf",
-    folder: "atlas",
-    sizeKB: 24,
-    modifiedLabel: "2026/7/10",
-    modifiedTs: 1782800000000,
-    content:
-      "设计说明:屋面檐沟详图选用说明、雨水斗布置原则、有组织排水与自由落水适用条件、天沟容积计算方法。",
-  },
+  { id: "kf-pdf-1", name: "!! GB 55037-2022 建筑防火通用规范-带条文说明", kind: "pdf", folder: "standard", sizeKB: 3930.2, modifiedLabel: "2026/7/27", modifiedTs: 1785157452500, fileName: "pdf/!! GB 55037-2022 建筑防火通用规范-带条文说明.pdf", content: "!! GB 55037-2022 建筑防火通用规范-带条文说明" },
+  { id: "kf-pdf-2", name: "GB51073-2014 医药工业仓储工程设计规范", kind: "pdf", folder: "standard", sizeKB: 3240.7, modifiedLabel: "2026/8/29", modifiedTs: 1787986089838, fileName: "pdf/GB51073-2014 医药工业仓储工程设计规范.pdf", content: "GB51073-2014 医药工业仓储工程设计规范" },
+  { id: "kf-pdf-3", name: "GB51107-2015 纤维增强硅酸钙板工厂设计规范", kind: "pdf", folder: "standard", sizeKB: 2913.4, modifiedLabel: "2026/8/29", modifiedTs: 1787986081657, fileName: "pdf/GB51107-2015 纤维增强硅酸钙板工厂设计规范.pdf", content: "GB51107-2015 纤维增强硅酸钙板工厂设计规范" },
+  { id: "kf-pdf-4", name: "GB51112-2015 针织工厂设计规范", kind: "pdf", folder: "standard", sizeKB: 2858.9, modifiedLabel: "2026/8/29", modifiedTs: 1787986100652, fileName: "pdf/GB51112-2015 针织工厂设计规范.pdf", content: "GB51112-2015 针织工厂设计规范" },
+  { id: "kf-pdf-5", name: "GB51123-2015 光纤器件生产厂工艺设计规范", kind: "pdf", folder: "standard", sizeKB: 3253.5, modifiedLabel: "2026/8/29", modifiedTs: 1787986129193, fileName: "pdf/GB51123-2015 光纤器件生产厂工艺设计规范.pdf", content: "GB51123-2015 光纤器件生产厂工艺设计规范" },
+  { id: "kf-pdf-6", name: "GB51133-2015 医药工业环境保护设计规范", kind: "pdf", folder: "standard", sizeKB: 7468.3, modifiedLabel: "2026/8/29", modifiedTs: 1787986096715, fileName: "pdf/GB51133-2015 医药工业环境保护设计规范.pdf", content: "GB51133-2015 医药工业环境保护设计规范" },
+  { id: "kf-pdf-7", name: "GB51143-2015 防灾避难场所设计规范", kind: "pdf", folder: "standard", sizeKB: 8304.4, modifiedLabel: "2026/8/29", modifiedTs: 1787986154881, fileName: "pdf/GB51143-2015 防灾避难场所设计规范.pdf", content: "GB51143-2015 防灾避难场所设计规范" },
+  { id: "kf-pdf-8", name: "GB51157-2016 物流建筑设计规范", kind: "pdf", folder: "standard", sizeKB: 7817.1, modifiedLabel: "2026/8/29", modifiedTs: 1787986096088, fileName: "pdf/GB51157-2016 物流建筑设计规范.pdf", content: "GB51157-2016 物流建筑设计规范" },
+  { id: "kf-pdf-9", name: "GB51179-2016 煤矿井下煤炭运输设计规范", kind: "pdf", folder: "standard", sizeKB: 3652.6, modifiedLabel: "2026/8/29", modifiedTs: 1787986109664, fileName: "pdf/GB51179-2016 煤矿井下煤炭运输设计规范.pdf", content: "GB51179-2016 煤矿井下煤炭运输设计规范" },
+  { id: "kf-pdf-10", name: "GB51192-2016 公园设计规范", kind: "pdf", folder: "standard", sizeKB: 4502.3, modifiedLabel: "2026/8/29", modifiedTs: 1787986108760, fileName: "pdf/GB51192-2016 公园设计规范.pdf", content: "GB51192-2016 公园设计规范" },
+  { id: "kf-pdf-11", name: "GB51202-2016 冰雪景观建筑技术标准", kind: "pdf", folder: "standard", sizeKB: 8878.4, modifiedLabel: "2026/8/29", modifiedTs: 1787986180053, fileName: "pdf/GB51202-2016 冰雪景观建筑技术标准.pdf", content: "GB51202-2016 冰雪景观建筑技术标准" },
+  { id: "kf-pdf-12", name: "GB51213-2017 煤炭矿井通信设计规范", kind: "pdf", folder: "standard", sizeKB: 1474.1, modifiedLabel: "2026/8/29", modifiedTs: 1787986111356, fileName: "pdf/GB51213-2017 煤炭矿井通信设计规范.pdf", content: "GB51213-2017 煤炭矿井通信设计规范" },
+  { id: "kf-pdf-13", name: "GBJ134-90人防工程施工及验收规范", kind: "pdf", folder: "standard", sizeKB: 587.1, modifiedLabel: "2026/8/29", modifiedTs: 1787986133460, fileName: "pdf/GBJ134-90人防工程施工及验收规范.pdf", content: "GBJ134-90人防工程施工及验收规范" },
+  { id: "kf-pdf-14", name: "GBT18922-2008 建筑颜色的表示方法", kind: "pdf", folder: "standard", sizeKB: 3890.9, modifiedLabel: "2026/8/29", modifiedTs: 1787986137695, fileName: "pdf/GBT18922-2008 建筑颜色的表示方法.pdf", content: "GBT18922-2008 建筑颜色的表示方法" },
+  { id: "kf-pdf-15", name: "GBT36876-2018 中小学校普通教室照明设计安装卫生要求", kind: "pdf", folder: "standard", sizeKB: 563, modifiedLabel: "2026/8/29", modifiedTs: 1787986138468, fileName: "pdf/GBT36876-2018 中小学校普通教室照明设计安装卫生要求.pdf", content: "GBT36876-2018 中小学校普通教室照明设计安装卫生要求" },
+  { id: "kf-pdf-16", name: "GBT50006-2010 厂房建筑模数协调标准", kind: "pdf", folder: "standard", sizeKB: 1108.5, modifiedLabel: "2026/8/29", modifiedTs: 1787986138213, fileName: "pdf/GBT50006-2010 厂房建筑模数协调标准.pdf", content: "GBT50006-2010 厂房建筑模数协调标准" },
+  { id: "kf-pdf-17", name: "GBT50087-2013 工业企业噪声控制设计规范", kind: "pdf", folder: "standard", sizeKB: 1516.9, modifiedLabel: "2026/8/29", modifiedTs: 1787986139261, fileName: "pdf/GBT50087-2013 工业企业噪声控制设计规范.pdf", content: "GBT50087-2013 工业企业噪声控制设计规范" },
+  { id: "kf-pdf-18", name: "GBT50186-2013 港口工程基本术语标准", kind: "pdf", folder: "standard", sizeKB: 7239.6, modifiedLabel: "2026/8/29", modifiedTs: 1787986142490, fileName: "pdf/GBT50186-2013 港口工程基本术语标准.pdf", content: "GBT50186-2013 港口工程基本术语标准" },
+  { id: "kf-pdf-19", name: "GBT50357-2018 历史文化名城保护规划标准", kind: "pdf", folder: "standard", sizeKB: 4079.8, modifiedLabel: "2026/8/29", modifiedTs: 1787986144955, fileName: "pdf/GBT50357-2018 历史文化名城保护规划标准.pdf", content: "GBT50357-2018 历史文化名城保护规划标准" },
+  { id: "kf-pdf-20", name: "GBT50362-2005 住宅性能评定技术标准", kind: "pdf", folder: "standard", sizeKB: 2857.9, modifiedLabel: "2026/8/29", modifiedTs: 1787986144730, fileName: "pdf/GBT50362-2005 住宅性能评定技术标准.pdf", content: "GBT50362-2005 住宅性能评定技术标准" },
 ];
 
 /** KB / MB 格式化 */
@@ -233,9 +164,13 @@ export function downloadVirtualFile(file: KnowledgeFile): void {
   URL.revokeObjectURL(url);
 }
 
-/** 真实 PDF 在站点中的访问地址(自动补 GitHub Pages basePath) */
+/** 真实 PDF 在站点中的访问地址(按路径段编码,自动补 GitHub Pages basePath) */
 export function realFileUrl(fileName: string): string {
-  return applyBasePath(`/${encodeURIComponent(fileName)}`);
+  const encoded = fileName
+    .split("/")
+    .map((seg) => encodeURIComponent(seg))
+    .join("/");
+  return applyBasePath(`/${encoded}`);
 }
 
 /** 客户端事件中使用的日期格式化(仅挂载后的交互调用,无水合风险) */
