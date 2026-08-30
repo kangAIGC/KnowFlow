@@ -21,6 +21,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { applyBasePath } from "@/lib/utils";
+import { INITIAL_FILES } from "@/lib/knowledge-data";
 
 type Mode = "upload" | "standard" | "atlas";
 
@@ -49,6 +50,19 @@ interface KnowledgeBaseItem {
 interface UploadStatus {
   status: "idle" | "uploading" | "success" | "error";
   message: string;
+}
+
+const SAVED_CHATS_KEY = "knowflow-saved-chats";
+
+type SavedChatMessage = Omit<Message, "timestamp"> & { timestamp: string };
+
+/** 已保存的历史对话(localStorage 持久化,最多保留 20 条) */
+interface SavedChat {
+  id: string;
+  mode: Mode;
+  title: string;
+  savedAt: string;
+  messages: SavedChatMessage[];
 }
 
 /**
@@ -189,6 +203,61 @@ function SearchContent() {
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- 历史对话保存(localStorage 持久化) ---
+  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
+  const savedChatsLoadedRef = useRef(false);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(SAVED_CHATS_KEY);
+      if (raw) setSavedChats(JSON.parse(raw) as SavedChat[]);
+    } catch {
+      // localStorage 不可用或数据损坏时静默降级为无历史
+    }
+    savedChatsLoadedRef.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!savedChatsLoadedRef.current) return;
+    try {
+      window.localStorage.setItem(SAVED_CHATS_KEY, JSON.stringify(savedChats));
+    } catch {
+      // 存储空间不足时静默失败
+    }
+  }, [savedChats]);
+
+  const handleSaveConversation = () => {
+    if (messages.length === 0) return;
+    const firstUser = messages.find((m) => m.role === "user");
+    const chat: SavedChat = {
+      id: `sc-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      mode: activeMode,
+      title: firstUser
+        ? firstUser.content.slice(0, 30)
+        : `${MODE_LABELS[activeMode]}对话`,
+      savedAt: new Date().toISOString(),
+      messages: messages.map((m) => ({
+        ...m,
+        timestamp: m.timestamp.toISOString(),
+        streaming: false,
+      })),
+    };
+    setSavedChats((prev) => [chat, ...prev].slice(0, 20));
+    setUploadStatus({ status: "success", message: "对话已保存到本地" });
+  };
+
+  const handleRestoreConversation = (chat: SavedChat) => {
+    setActiveMode(chat.mode);
+    setMessages(
+      chat.messages.map((m) => ({ ...m, timestamp: new Date(m.timestamp) }))
+    );
+    setUploadStatus({ status: "idle", message: "" });
+  };
+
+  const handleDeleteSavedChat = (id: string) => {
+    setSavedChats((prev) => prev.filter((c) => c.id !== id));
+  };
 
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBaseItem[]>([
     {
@@ -655,12 +724,11 @@ function SearchContent() {
     }
   };
 
-  const standardCount = knowledgeBases.filter(
-    (kb) => kb.category === "standard"
+  // 角标数字与「知识库」页真实数据保持一致(规范 20 / 图集 10)
+  const standardCount = INITIAL_FILES.filter(
+    (f) => f.folder === "standard"
   ).length;
-  const atlasCount = knowledgeBases.filter(
-    (kb) => kb.category === "atlas"
-  ).length;
+  const atlasCount = INITIAL_FILES.filter((f) => f.folder === "atlas").length;
 
   const hasMessages = messages.length > 0;
   const modeLabel = MODE_LABELS[activeMode];
@@ -743,6 +811,79 @@ function SearchContent() {
                   </button>
                 ))}
             </div>
+
+            {hasMessages ? (
+              <button
+                onClick={handleSaveConversation}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/60"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-3.5 w-3.5"
+                >
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                保存当前对话
+              </button>
+            ) : null}
+
+            {savedChats.length > 0 ? (
+              <div className="mt-5">
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  已保存对话({savedChats.length})
+                </h3>
+                <div className="space-y-1">
+                  {savedChats.map((chat) => (
+                    <div key={chat.id} className="group flex items-center gap-1">
+                      <button
+                        onClick={() => handleRestoreConversation(chat)}
+                        title="点击恢复该对话"
+                        className="flex min-w-0 flex-1 items-start gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-muted/50"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                        >
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm text-foreground">
+                            {chat.title}
+                          </span>
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {MODE_LABELS[chat.mode]} ·{" "}
+                            {new Date(chat.savedAt).toLocaleDateString()}
+                          </span>
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSavedChat(chat.id)}
+                        title={`删除「${chat.title}」`}
+                        aria-label={`删除 ${chat.title}`}
+                        className="mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </aside>
 
