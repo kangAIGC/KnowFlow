@@ -1079,22 +1079,8 @@ function SearchContent() {
                 </div>
               </div>
 
-              {/* Three Action Buttons */}
-              <div className="mt-3 grid grid-cols-3 gap-2" suppressHydrationWarning>
-                {/* Upload Knowledge Base */}
-                <button
-                  onClick={() => handleModeButtonClick("upload")}
-                  disabled={isLoading}
-                  suppressHydrationWarning
-                  className={`group flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all ${
-                    activeMode === "upload"
-                      ? "border-destructive bg-destructive text-white shadow-sm"
-                      : "border-border bg-card text-foreground hover:border-destructive/30 hover:bg-destructive/5"
-                  }`}
-                >
-                  <Library className="h-4 w-4" />
-                  上传知识库
-                </button>
+              {/* Action Buttons(上传知识库入口已取消,知识库管理迁至 /knowledge 页) */}
+              <div className="mt-3 grid grid-cols-2 gap-2" suppressHydrationWarning>
                 {/* Standard Search */}
                 <button
                   onClick={() => handleModeButtonClick("standard")}

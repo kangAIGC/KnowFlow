@@ -32,7 +32,8 @@ export default function Home() {
       {/* Search Cards */}
       <section className="mx-auto max-w-7xl px-6 pb-10">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Link href="/search?category=upload" className="block cursor-pointer">
+          {/* 知识库管理已迁至独立页面 */}
+          <Link href="/knowledge" className="block cursor-pointer">
             <SearchCard
               title="知识库管理"
               description="统一管理建筑规范与标准图集，支持用户上传 PDF 等文件入库，支持分类浏览与快速定位"
