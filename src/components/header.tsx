@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Home, Bot, Bell, Settings, MoreHorizontal, Crown } from 'lucide-react';
+import { Home, Bot, Database, Bell, Settings, MoreHorizontal, Crown } from 'lucide-react';
 import VIPModal from '@/components/vip-modal';
 import UserMenu from '@/components/user-menu';
 import { useMounted } from '@/hooks/use-mounted';
@@ -42,6 +42,17 @@ export default function Header() {
                 title="首页"
               >
                 <Home className="h-5 w-5" />
+              </Link>
+              <Link
+                href="/knowledge"
+                className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all ${
+                  pathname.startsWith('/knowledge')
+                    ? 'bg-destructive text-white'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+                title="知识库管理"
+              >
+                <Database className="h-5 w-5" />
               </Link>
               <Link
                 href="/search"
