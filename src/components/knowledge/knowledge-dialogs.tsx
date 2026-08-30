@@ -46,7 +46,7 @@ export interface NewFileDialogProps {
   }) => void;
 }
 
-const NEW_KINDS: FileKind[] = ["pdf", "doc", "docx", "txt"];
+const NEW_KIND_LABEL = "PDF 文档";
 
 export function NewFileDialog({
   open,
@@ -55,7 +55,6 @@ export function NewFileDialog({
   onCreate,
 }: NewFileDialogProps) {
   const [name, setName] = useState("");
-  const [kind, setKind] = useState<FileKind>("docx");
   const [folder, setFolder] = useState<FolderId>(defaultFolder);
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +63,6 @@ export function NewFileDialog({
   useEffect(() => {
     if (open) {
       setName("");
-      setKind("docx");
       setFolder(defaultFolder);
       setContent("");
       setError(null);
@@ -77,7 +75,8 @@ export function NewFileDialog({
       setError("请输入文件名称");
       return;
     }
-    onCreate({ name: trimmed, kind, folder, content });
+    // 系统当前仅支持 PDF,固定以 PDF 类型创建
+    onCreate({ name: trimmed, kind: "pdf", folder, content });
     onOpenChange(false);
   };
 
@@ -120,18 +119,10 @@ export function NewFileDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <span className="text-sm font-medium">文件类型</span>
-              <Select value={kind} onValueChange={(v) => setKind(v as FileKind)}>
-                <SelectTrigger aria-label="文件类型">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {NEW_KINDS.map((k) => (
-                    <SelectItem key={k} value={k}>
-                      {KIND_LABELS[k]} 文档
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {/* 系统当前仅支持 PDF,以只读样式展示 */}
+              <div className="flex h-9 items-center rounded-md border border-border bg-muted/30 px-3 text-sm text-muted-foreground">
+                {NEW_KIND_LABEL}
+              </div>
             </div>
             <div className="space-y-1.5">
               <span className="text-sm font-medium">所属文件夹</span>

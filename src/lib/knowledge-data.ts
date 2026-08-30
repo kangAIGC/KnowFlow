@@ -83,7 +83,7 @@ export const INITIAL_FILES: KnowledgeFile[] = [
   {
     id: "kf-3",
     name: "建筑设计防火规范 GB50016 条文摘录",
-    kind: "doc",
+    kind: "pdf",
     folder: "standard",
     sizeKB: 96,
     modifiedLabel: "2026/8/12",
@@ -94,7 +94,7 @@ export const INITIAL_FILES: KnowledgeFile[] = [
   {
     id: "kf-4",
     name: "民用建筑设计统一标准 GB50352 学习笔记",
-    kind: "docx",
+    kind: "pdf",
     folder: "standard",
     sizeKB: 148,
     modifiedLabel: "2026/8/8",
@@ -105,7 +105,7 @@ export const INITIAL_FILES: KnowledgeFile[] = [
   {
     id: "kf-5",
     name: "屋面工程技术规范 GB50340 要点整理",
-    kind: "doc",
+    kind: "pdf",
     folder: "standard",
     sizeKB: 88,
     modifiedLabel: "2026/7/30",
@@ -116,7 +116,7 @@ export const INITIAL_FILES: KnowledgeFile[] = [
   {
     id: "kf-6",
     name: "坡屋面构造详图集摘要",
-    kind: "docx",
+    kind: "pdf",
     folder: "atlas",
     sizeKB: 132,
     modifiedLabel: "2026/7/26",
@@ -138,7 +138,7 @@ export const INITIAL_FILES: KnowledgeFile[] = [
   {
     id: "kf-8",
     name: "建筑坡屋面排水设计说明",
-    kind: "txt",
+    kind: "pdf",
     folder: "atlas",
     sizeKB: 24,
     modifiedLabel: "2026/7/10",
@@ -200,13 +200,44 @@ export function buildVirtualContent(
   return base + (extra?.trim() ? extra.trim() : "本文档为在 KnowFlow 中在线新建的文档。");
 }
 
-/** 虚拟文档以纯文本形式导出下载(真实 PDF 走原文件下载) */
+/**
+ * 生成一个仅含 ASCII 占位文字的最小合法 PDF(字节偏移按 1 字节/字符计算,全 ASCII 安全)。
+ * 用于虚拟(在线新建/模拟入库)PDF 文档的下载,保证下载得到可正常打开的 .pdf 文件。
+ */
+export function buildVirtualPdfBlob(): Blob {
+  const stream = "BT /F1 18 Tf 72 770 Td (KnowFlow Virtual PDF Document) Tj ET";
+  const objects = [
+    "<</Type/Catalog/Pages 2 0 R>>",
+    "<</Type/Pages/Kids[3 0 R]/Count 1>>",
+    "<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>",
+    `<</Length ${stream.length}>>\nstream\n${stream}\nendstream`,
+    "<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>",
+  ];
+  let pdf = "%PDF-1.4\n";
+  const offsets: number[] = [];
+  objects.forEach((body, i) => {
+    offsets.push(pdf.length);
+    pdf += `${i + 1} 0 obj\n${body}\nendobj\n`;
+  });
+  const xrefStart = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  offsets.forEach((off) => {
+    pdf += `${off.toString().padStart(10, "0")} 00000 n \n`;
+  });
+  pdf += `trailer\n<</Size ${objects.length + 1}/Root 1 0 R>>\nstartxref\n${xrefStart}\n%%EOF`;
+  return new Blob([pdf], { type: "application/pdf" });
+}
+
+/** 虚拟文档下载:PDF 生成合法占位 PDF,其余类型回退纯文本(当前数据均为 PDF) */
 export function downloadVirtualFile(file: KnowledgeFile): void {
-  const blob = new Blob([file.content], { type: "text/plain;charset=utf-8" });
+  const isPdf = file.kind === "pdf";
+  const blob = isPdf
+    ? buildVirtualPdfBlob()
+    : new Blob([file.content], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${file.name}.txt`;
+  a.download = `${file.name}.${isPdf ? "pdf" : "txt"}`;
   document.body.appendChild(a);
   a.click();
   a.remove();

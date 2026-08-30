@@ -80,12 +80,10 @@ const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
   { value: "size-asc", label: "大小(小→大)" },
 ];
 
+// 系统当前仅收录 PDF 文件,类型筛选只保留 全部类型/PDF
 const TYPE_OPTIONS: Array<{ value: FileKind | "all"; label: string }> = [
   { value: "all", label: "全部类型" },
   { value: "pdf", label: "PDF" },
-  { value: "doc", label: "DOC" },
-  { value: "docx", label: "DOCX" },
-  { value: "txt", label: "TXT" },
 ];
 
 export default function KnowledgePage() {
