@@ -39,6 +39,7 @@ export default function Home() {
               description="统一管理建筑规范与标准图集，支持用户上传 PDF 等文件入库，支持分类浏览与快速定位"
               image="/ill-3.png"
               icon={<Database className="h-5 w-5" />}
+              iconClassName="bg-destructive/10 text-destructive"
               imageHeight="h-40"
               hideWatermark
             />
@@ -59,6 +60,7 @@ export default function Home() {
               description="基于多模态 RAG 处理国标图集，支持文字描述与图纸截图双向检索，快速找到相关构造详图"
               image="/ill-atlas-new.png"
               icon={<ImageIcon className="h-5 w-5" />}
+              iconClassName="bg-destructive/10 text-destructive"
               imageHeight="h-40"
             />
           </Link>
