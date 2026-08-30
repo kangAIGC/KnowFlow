@@ -31,13 +31,13 @@ export interface KnowledgeFile {
 }
 
 export const FOLDERS: FolderNode[] = [
-  { id: "standard", name: "规范知识库" },
-  { id: "atlas", name: "图集知识库" },
+  { id: "standard", name: "规范" },
+  { id: "atlas", name: "图集" },
 ];
 
 export const FOLDER_LABELS: Record<FolderId, string> = {
-  standard: "规范知识库",
-  atlas: "图集知识库",
+  standard: "规范",
+  atlas: "图集",
 };
 
 export const KIND_LABELS: Record<FileKind, string> = {

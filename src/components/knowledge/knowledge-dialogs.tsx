@@ -168,10 +168,17 @@ export function NewFileDialog({
         </div>
 
         <DialogFooter className="gap-2">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => onOpenChange(false)}
+          >
             取消
           </Button>
-          <Button type="submit">创建</Button>
+          <Button type="submit" variant="destructive">
+            创建
+          </Button>
         </DialogFooter>
         </form>
       </DialogContent>

@@ -14,7 +14,7 @@ import {
 } from "@/lib/knowledge-data";
 import { cn } from "@/lib/utils";
 
-/** 规范=蓝色书本徽章,图集=橙色图片徽章,列表与网格视图共用 */
+/** 规范=蓝色书本徽章,图集=红色图片徽章(与站点主红色一致,不用橙色),列表与网格视图共用 */
 const FOLDER_BADGES: Record<
   FolderId,
   { badgeCls: string; icon: LucideIcon }
@@ -24,7 +24,7 @@ const FOLDER_BADGES: Record<
     icon: BookOpen,
   },
   atlas: {
-    badgeCls: "bg-orange-500/10 text-orange-700 dark:text-orange-300",
+    badgeCls: "bg-destructive/10 text-destructive dark:text-red-300",
     icon: ImageIcon,
   },
 };

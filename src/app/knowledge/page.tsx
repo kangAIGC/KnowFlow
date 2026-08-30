@@ -345,7 +345,7 @@ export default function KnowledgePage() {
                   className={cn(
                     "px-3 py-2 text-xs font-medium transition-colors",
                     searchScope === opt.value
-                      ? "bg-primary/10 text-primary"
+                      ? "bg-destructive/10 text-destructive"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
@@ -423,7 +423,7 @@ export default function KnowledgePage() {
                   className={cn(
                     "flex h-9 w-9 items-center justify-center transition-colors",
                     view === "list"
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-destructive text-white"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
@@ -437,7 +437,7 @@ export default function KnowledgePage() {
                   className={cn(
                     "flex h-9 w-9 items-center justify-center transition-colors",
                     view === "grid"
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-destructive text-white"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
@@ -445,11 +445,11 @@ export default function KnowledgePage() {
                 </button>
               </div>
 
-              {/* 导入文件(PDF 上传) */}
+              {/* 导入文件(PDF 上传):红色描边统一风格 */}
               <Button
                 variant="outline"
                 size="sm"
-                className="h-9 gap-1.5"
+                className="h-9 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                 onClick={handleUploadClick}
                 disabled={uploadTask !== null}
               >
@@ -465,8 +465,9 @@ export default function KnowledgePage() {
                 aria-hidden="true"
               />
 
-              {/* 新建 */}
+              {/* 新建:红色实心,与站点主色一致 */}
               <Button
+                variant="destructive"
                 size="sm"
                 className="h-9 gap-1.5"
                 onClick={() => setNewDialogOpen(true)}
@@ -551,6 +552,7 @@ export default function KnowledgePage() {
                 <Button
                   variant="outline"
                   size="sm"
+                  className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => {
                     setQuery("");
                     setTypeFilter("all");
@@ -614,7 +616,7 @@ export default function KnowledgePage() {
                         className={cn(
                           "h-8 w-8 rounded-md text-xs font-medium transition-colors",
                           p === safePage
-                            ? "bg-primary text-primary-foreground"
+                            ? "bg-destructive text-white"
                             : "border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                         aria-current={p === safePage ? "page" : undefined}

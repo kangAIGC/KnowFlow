@@ -9,7 +9,7 @@ import {
 } from "@/lib/knowledge-data";
 import { cn } from "@/lib/utils";
 
-/** 两个顶级知识库的视觉区分:规范=蓝色书本,图集=橙色图片 */
+/** 两个顶级知识库的视觉区分:规范=蓝色书本,图集=红色图片(与站点主红色一致,不用橙色) */
 const FOLDER_UI: Record<
   FolderId,
   { icon: LucideIcon; iconCls: string; activeCls: string }
@@ -22,9 +22,9 @@ const FOLDER_UI: Record<
   },
   atlas: {
     icon: ImageIcon,
-    iconCls: "text-orange-600 dark:text-orange-400",
+    iconCls: "text-destructive",
     activeCls:
-      "bg-orange-500/10 text-orange-700 dark:text-orange-300 ring-1 ring-orange-500/30",
+      "bg-destructive/10 text-destructive dark:text-red-300 ring-1 ring-destructive/30",
   },
 };
 
