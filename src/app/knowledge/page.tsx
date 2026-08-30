@@ -60,7 +60,7 @@ import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 8;
 
-type SortKey = "modified-desc" | "modified-asc" | "name-asc" | "size-desc" | "size-asc";
+type SortKey = "modified-desc" | "name-asc" | "size-desc";
 type ViewMode = "list" | "grid";
 
 interface UploadTask {
@@ -74,11 +74,9 @@ interface StatusMessage {
 }
 
 const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
-  { value: "modified-desc", label: "修改时间(新→旧)" },
-  { value: "modified-asc", label: "修改时间(旧→新)" },
-  { value: "name-asc", label: "名称(A→Z)" },
-  { value: "size-desc", label: "大小(大→小)" },
-  { value: "size-asc", label: "大小(小→大)" },
+  { value: "modified-desc", label: "修改时间" },
+  { value: "name-asc", label: "名称" },
+  { value: "size-desc", label: "大小" },
 ];
 
 export default function KnowledgePage() {
@@ -145,17 +143,11 @@ export default function KnowledgePage() {
       case "modified-desc":
         sorted.sort((a, b) => b.modifiedTs - a.modifiedTs);
         break;
-      case "modified-asc":
-        sorted.sort((a, b) => a.modifiedTs - b.modifiedTs);
-        break;
       case "name-asc":
         sorted.sort((a, b) => a.name.localeCompare(b.name, "zh-Hans-CN"));
         break;
       case "size-desc":
         sorted.sort((a, b) => b.sizeKB - a.sizeKB);
-        break;
-      case "size-asc":
-        sorted.sort((a, b) => a.sizeKB - b.sizeKB);
         break;
     }
     return sorted;
@@ -326,7 +318,7 @@ export default function KnowledgePage() {
             <div className="ml-auto flex flex-wrap items-center gap-2">
               {/* 排序 */}
               <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
-                <SelectTrigger className="h-9 w-[150px] text-xs" aria-label="排序方式">
+                <SelectTrigger className="h-9 w-[100px] text-xs" aria-label="排序方式">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
