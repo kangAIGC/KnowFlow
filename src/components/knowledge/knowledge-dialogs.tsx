@@ -91,7 +91,14 @@ export function NewFileDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="flex min-h-0 flex-1 flex-col gap-4"
+        >
+          <div className="space-y-4">
           <div className="space-y-1.5">
             <label htmlFor="new-file-name" className="text-sm font-medium">
               文件名称 <span className="text-destructive">*</span>
@@ -161,11 +168,12 @@ export function NewFileDialog({
         </div>
 
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             取消
           </Button>
-          <Button onClick={handleSubmit}>创建</Button>
+          <Button type="submit">创建</Button>
         </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
