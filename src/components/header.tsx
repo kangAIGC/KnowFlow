@@ -2,9 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { Home, Bot, Database, Bell, Settings, MoreHorizontal, Crown } from 'lucide-react';
-import VIPModal from '@/components/vip-modal';
+import { Home, Bot, Database, Bell, Settings, MoreHorizontal } from 'lucide-react';
 import UserMenu from '@/components/user-menu';
 import { useMounted } from '@/hooks/use-mounted';
 
@@ -15,8 +13,6 @@ export default function Header() {
   const mounted = useMounted();
   const pathname = usePathname();
   const isActive = (target: string) => pathname === target;
-
-  const [vipOpen, setVipOpen] = useState(false);
 
   if (!mounted) return null;
 
@@ -88,19 +84,10 @@ export default function Header() {
             >
               <MoreHorizontal className="h-5 w-5" />
             </button>
-            <button
-              onClick={() => setVipOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-              title="VIP充值"
-            >
-              <Crown className="h-5 w-5" />
-            </button>
             <UserMenu />
           </div>
         </div>
       </header>
-
-      <VIPModal open={vipOpen} onOpenChange={setVipOpen} />
     </>
   );
 }
