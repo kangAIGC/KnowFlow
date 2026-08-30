@@ -14,23 +14,12 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle,
-  Database,
   ImageIcon,
   Library,
-  Trash2,
-  Eye,
-  Download,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { applyBasePath } from "@/lib/utils";
 
 type Mode = "upload" | "standard" | "atlas";
@@ -215,9 +204,6 @@ function SearchContent() {
       fileName: "00SJ202建筑坡屋面构造.pdf",
     },
   ]);
-
-  // 当前正在预览的知识库条目;为 null 时预览弹窗关闭。
-  const [previewKb, setPreviewKb] = useState<KnowledgeBaseItem | null>(null);
 
   const [conversationId, setConversationId] = useState<Record<Mode, string>>({
     upload: "",
@@ -1134,113 +1120,10 @@ function SearchContent() {
                   </span>
                 </button>
               </div>
-
-              {/* Knowledge Base List */}
-              {knowledgeBases.length > 0 && (
-                <div className="mt-3">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    <Database className="h-3.5 w-3.5" />
-                    已入库知识库
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {knowledgeBases.map((kb) => (
-                      <div
-                        key={kb.id}
-                        className={`group flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm font-medium transition-all ${
-                          kb.category === "atlas"
-                            ? "border-orange/30 bg-orange/5 text-foreground"
-                            : "border-blue/30 bg-blue/5 text-foreground"
-                        }`}
-                      >
-                        {kb.category === "atlas" ? (
-                          <ImageIcon className="h-3.5 w-3.5 shrink-0" />
-                        ) : (
-                          <FileText className="h-3.5 w-3.5 shrink-0" />
-                        )}
-                        <span className="truncate max-w-[260px]">{kb.title}</span>
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                          {kb.category === "atlas" ? "图集" : "规范"}
-                        </span>
-                        {kb.fileName && (
-                          <>
-                            <button
-                              type="button"
-                              title={`预览「${kb.title}」`}
-                              aria-label={`预览 ${kb.title}`}
-                              onClick={() => setPreviewKb(kb)}
-                              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-60 transition-all hover:bg-primary/10 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-1"
-                            >
-                              <Eye className="h-3 w-3" />
-                            </button>
-                            <a
-                              href={applyBasePath(
-                                `/${encodeURIComponent(kb.fileName)}`
-                              )}
-                              download={kb.fileName}
-                              title={`下载「${kb.title}」`}
-                              aria-label={`下载 ${kb.title}`}
-                              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-60 transition-all hover:bg-primary/10 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-1"
-                            >
-                              <Download className="h-3 w-3" />
-                            </a>
-                          </>
-                        )}
-                        <button
-                          type="button"
-                          title={`从已入库中移除「${kb.title}」`}
-                          aria-label={`移除知识库 ${kb.title}`}
-                          onClick={() => {
-                            const ok = window.confirm(
-                              `确定要从已入库知识库中移除「${kb.title}」吗？移除后如需恢复，可重新上传对应 PDF 并执行入库指令。`
-                            );
-                            if (!ok) return;
-                            setKnowledgeBases((prev) =>
-                              prev.filter((item) => item.id !== kb.id)
-                            );
-                            setUploadStatus({
-                              status: "success",
-                              message: `已移除「${kb.title}」`,
-                            });
-                          }}
-                          className="ml-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-60 transition-all hover:bg-destructive/10 hover:text-destructive hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:ring-offset-1"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </main>
       </div>
-
-      {/* 文档在线预览弹窗:用 iframe 加载 public 目录下的 PDF,浏览器原生渲染 */}
-      <Dialog
-        open={previewKb !== null}
-        onOpenChange={(open) => {
-          if (!open) setPreviewKb(null);
-        }}
-      >
-        <DialogContent className="flex h-[88vh] w-[calc(100%-2rem)] max-w-[1100px] flex-col gap-3 p-4 sm:p-5">
-          <DialogHeader className="space-y-0.5">
-            <DialogTitle className="truncate pr-8 text-base font-semibold">
-              {previewKb?.title ?? "文档预览"}
-            </DialogTitle>
-            <DialogDescription className="truncate pr-8 text-xs">
-              {previewKb?.fileName ?? ""}
-            </DialogDescription>
-          </DialogHeader>
-          {previewKb?.fileName && (
-            <iframe
-              src={applyBasePath(`/${encodeURIComponent(previewKb.fileName)}`)}
-              title={previewKb.title}
-              className="h-full w-full flex-1 rounded-md border border-border bg-muted/30"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
