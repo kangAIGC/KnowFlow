@@ -77,6 +77,16 @@ export const INITIAL_FILES: KnowledgeFile[] = [
   { id: "kf-pdf-18", name: "GBT50186-2013 港口工程基本术语标准", kind: "pdf", folder: "standard", sizeKB: 7239.6, modifiedLabel: "2026/8/29", modifiedTs: 1787986142490, fileName: "pdf/GBT50186-2013 港口工程基本术语标准.pdf", content: "GBT50186-2013 港口工程基本术语标准" },
   { id: "kf-pdf-19", name: "GBT50357-2018 历史文化名城保护规划标准", kind: "pdf", folder: "standard", sizeKB: 4079.8, modifiedLabel: "2026/8/29", modifiedTs: 1787986144955, fileName: "pdf/GBT50357-2018 历史文化名城保护规划标准.pdf", content: "GBT50357-2018 历史文化名城保护规划标准" },
   { id: "kf-pdf-20", name: "GBT50362-2005 住宅性能评定技术标准", kind: "pdf", folder: "standard", sizeKB: 2857.9, modifiedLabel: "2026/8/29", modifiedTs: 1787986144730, fileName: "pdf/GBT50362-2005 住宅性能评定技术标准.pdf", content: "GBT50362-2005 住宅性能评定技术标准" },
+  { id: "kf-pdf2-1", name: "00SJ202建筑坡屋面构造", kind: "pdf", folder: "atlas", sizeKB: 3310.6, modifiedLabel: "2026/8/9", modifiedTs: 1786247249846, fileName: "pdf2/00SJ202建筑坡屋面构造.pdf", content: "00SJ202建筑坡屋面构造" },
+  { id: "kf-pdf2-2", name: "02J611-2 轻质推拉钢大门", kind: "pdf", folder: "atlas", sizeKB: 2720.7, modifiedLabel: "2026/8/29", modifiedTs: 1787986160993, fileName: "pdf2/02J611-2 轻质推拉钢大门.pdf", content: "02J611-2 轻质推拉钢大门" },
+  { id: "kf-pdf2-3", name: "03j001围墙大门", kind: "pdf", folder: "atlas", sizeKB: 2562.5, modifiedLabel: "2026/8/29", modifiedTs: 1787986162810, fileName: "pdf2/03j001围墙大门.pdf", content: "03j001围墙大门" },
+  { id: "kf-pdf2-4", name: "03J111-2 预制轻钢龙骨内隔墙", kind: "pdf", folder: "atlas", sizeKB: 1987.1, modifiedLabel: "2026/8/29", modifiedTs: 1787986175000, fileName: "pdf2/03J111-2 预制轻钢龙骨内隔墙.pdf", content: "03J111-2 预制轻钢龙骨内隔墙" },
+  { id: "kf-pdf2-5", name: "03J926建筑无障碍设计", kind: "pdf", folder: "atlas", sizeKB: 5450.8, modifiedLabel: "2026/8/30", modifiedTs: 1788064293125, fileName: "pdf2/03J926建筑无障碍设计.pdf", content: "03J926建筑无障碍设计" },
+  { id: "kf-pdf2-6", name: "04J012-3 环境景观-亭廊架之一", kind: "pdf", folder: "atlas", sizeKB: 2755.5, modifiedLabel: "2026/8/29", modifiedTs: 1787986172179, fileName: "pdf2/04J012-3 环境景观-亭廊架之一.pdf", content: "04J012-3 环境景观-亭廊架之一" },
+  { id: "kf-pdf2-7", name: "04J114-2 石膏砌块内隔墙", kind: "pdf", folder: "atlas", sizeKB: 4276.3, modifiedLabel: "2026/8/29", modifiedTs: 1787986172193, fileName: "pdf2/04J114-2 石膏砌块内隔墙.pdf", content: "04J114-2 石膏砌块内隔墙" },
+  { id: "kf-pdf2-8", name: "04J621-2 电动采光排烟天窗", kind: "pdf", folder: "atlas", sizeKB: 2449.4, modifiedLabel: "2026/8/29", modifiedTs: 1787986172436, fileName: "pdf2/04J621-2 电动采光排烟天窗.pdf", content: "04J621-2 电动采光排烟天窗" },
+  { id: "kf-pdf2-9", name: "05J927-1 汽车库(坡道式)建筑构造", kind: "pdf", folder: "atlas", sizeKB: 1775.9, modifiedLabel: "2026/8/29", modifiedTs: 1787986176706, fileName: "pdf2/05J927-1 汽车库(坡道式)建筑构造.pdf", content: "05J927-1 汽车库(坡道式)建筑构造" },
+  { id: "kf-pdf2-10", name: "06J305 重载地面、轻轨等特殊楼地面", kind: "pdf", folder: "atlas", sizeKB: 2052.5, modifiedLabel: "2026/8/29", modifiedTs: 1787986183955, fileName: "pdf2/06J305 重载地面、轻轨等特殊楼地面.pdf", content: "06J305 重载地面、轻轨等特殊楼地面" },
 ];
 
 /** KB / MB 格式化 */
