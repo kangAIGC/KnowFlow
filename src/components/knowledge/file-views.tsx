@@ -1,10 +1,7 @@
 "use client";
 
-import { Eye, Download, Trash2, FileText, BookOpen, Image as ImageIcon } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Eye, Download, Trash2 } from "lucide-react";
 import {
-  FOLDER_LABELS,
-  KIND_COLORS,
   KIND_LABELS,
   contentSnippet,
   formatSize,
@@ -12,36 +9,25 @@ import {
   type FolderId,
   type KnowledgeFile,
 } from "@/lib/knowledge-data";
-import { cn } from "@/lib/utils";
+import { applyBasePath, cn } from "@/lib/utils";
 
-/** 规范/图集统一红色系徽章,以图标形状区分(书本/图片),与站点主色一致 */
-const FOLDER_BADGES: Record<
-  FolderId,
-  { badgeCls: string; icon: LucideIcon }
-> = {
-  standard: {
-    badgeCls: "bg-destructive/10 text-destructive dark:text-red-300",
-    icon: BookOpen,
-  },
-  atlas: {
-    badgeCls: "bg-destructive/10 text-destructive dark:text-red-300",
-    icon: ImageIcon,
-  },
+/** 规范/图集的行首图标:直接复用站点首页已有的大尺寸插图,以图片区分知识库 */
+const FOLDER_ICONS: Record<FolderId, string> = {
+  standard: applyBasePath("/ill-4.png"),
+  atlas: applyBasePath("/ill-atlas-new.png"),
 };
 
-function FolderBadge({ folder }: { folder: FolderId }) {
-  const meta = FOLDER_BADGES[folder];
-  const Icon = meta.icon;
+function FolderImageIcon({ file }: { file: KnowledgeFile }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium",
-        meta.badgeCls
-      )}
-    >
-      <Icon className="h-3 w-3" />
-      {FOLDER_LABELS[folder]}
-    </span>
+    // 静态导出站点,无需 next/image 优化
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={FOLDER_ICONS[file.folder]}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      className="h-9 w-9 shrink-0 rounded-lg border border-border/40 object-cover"
+    />
   );
 }
 
@@ -114,20 +100,6 @@ function FileActions({ file, onView, onDownload, onDelete, compact }: FileAction
   );
 }
 
-function KindIcon({ file }: { file: KnowledgeFile }) {
-  return (
-    <span
-      className={cn(
-        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-        KIND_COLORS[file.kind]
-      )}
-      aria-hidden="true"
-    >
-      <FileText className="h-4.5 w-4.5" />
-    </span>
-  );
-}
-
 export interface FileViewsProps {
   files: KnowledgeFile[];
   query: string;
@@ -144,12 +116,18 @@ export function FileListView({
   onDelete,
 }: FileViewsProps) {
   return (
+    // table-fixed + 固定列宽:翻页时列布局不随内容重排,页面尺寸保持稳定
     <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <table className="w-full text-sm">
+      <table className="w-full table-fixed text-sm">
+        <colgroup>
+          <col />
+          <col className="hidden w-[100px] sm:table-column" />
+          <col className="hidden w-[90px] sm:table-column" />
+          <col className="w-[120px]" />
+        </colgroup>
         <thead>
           <tr className="border-b border-border bg-muted/40 text-left text-xs text-muted-foreground">
             <th className="px-4 py-3 font-medium">文档名称</th>
-            <th className="hidden px-4 py-3 font-medium md:table-cell">所在文件夹</th>
             <th className="hidden px-4 py-3 font-medium sm:table-cell">修改时间</th>
             <th className="hidden px-4 py-3 font-medium sm:table-cell">大小</th>
             <th className="px-4 py-3 text-right font-medium">操作</th>
@@ -165,9 +143,9 @@ export function FileListView({
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <KindIcon file={file} />
+                    <FolderImageIcon file={file} />
                     <div className="min-w-0">
-                      <div className="truncate font-medium text-foreground">
+                      <div className="truncate text-xs font-medium text-foreground">
                         <HighlightText text={file.name} query={query} />
                       </div>
                       <div className="mt-0.5 text-xs text-muted-foreground">
@@ -183,9 +161,6 @@ export function FileListView({
                       </div>
                     </div>
                   </div>
-                </td>
-                <td className="hidden px-4 py-3 md:table-cell">
-                  <FolderBadge folder={file.folder} />
                 </td>
                 <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground sm:table-cell">
                   {file.modifiedLabel}
@@ -228,11 +203,8 @@ export function FileGridView({
             key={file.id}
             className="group flex flex-col rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
           >
-            <div className="flex items-start justify-between gap-2">
-              <KindIcon file={file} />
-              <FolderBadge folder={file.folder} />
-            </div>
-            <div className="mt-3 line-clamp-2 min-h-[2.5rem] font-medium text-foreground">
+            <FolderImageIcon file={file} />
+            <div className="mt-3 line-clamp-2 min-h-[2.5rem] text-xs font-medium text-foreground">
               <HighlightText text={file.name} query={query} />
             </div>
             {snippet ? (
