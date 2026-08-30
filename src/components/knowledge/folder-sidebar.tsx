@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, FolderOpen, Image as ImageIcon, Library } from "lucide-react";
+import { BookOpen, Image as ImageIcon, Library } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
   FOLDERS,
@@ -121,11 +121,8 @@ export default function FolderSidebar({
                 )}
                 aria-current={active ? "true" : undefined}
               >
-                {active ? (
-                  <FolderOpen className={cn("h-4 w-4 shrink-0", ui.iconCls)} />
-                ) : (
-                  <Icon className={cn("h-4 w-4 shrink-0", ui.iconCls)} />
-                )}
+                {/* 选中/未选中恒定使用各自专属图标,仅切换颜色,避免图标跳变 */}
+                <Icon className={cn("h-4 w-4 shrink-0", ui.iconCls)} />
                 <span className="flex-1 truncate text-left">
                   {FOLDER_LABELS[folder.id]}
                 </span>
