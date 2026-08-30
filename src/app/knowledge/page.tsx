@@ -32,7 +32,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import FolderSidebar from "@/components/knowledge/folder-sidebar";
+import FolderSidebar, {
+  type SidebarSelection,
+} from "@/components/knowledge/folder-sidebar";
 import {
   FileListView,
   FileGridView,
@@ -77,7 +79,7 @@ export default function KnowledgePage() {
   const mounted = useMounted();
 
   const [files, setFiles] = useState<KnowledgeFile[]>(INITIAL_FILES);
-  const [selectedFolder, setSelectedFolder] = useState<FolderId>("standard");
+  const [selectedFolder, setSelectedFolder] = useState<SidebarSelection>("all");
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("modified-desc");
   const [view, setView] = useState<ViewMode>("list");
@@ -117,11 +119,11 @@ export default function KnowledgePage() {
     [files]
   );
 
-  // 过滤(名称+内容联合匹配)→ 排序
+  // 过滤(名称+内容联合匹配;选中「全部」时不限制知识库)→ 排序
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = files.filter((f) => {
-      if (f.folder !== selectedFolder) return false;
+      if (selectedFolder !== "all" && f.folder !== selectedFolder) return false;
       if (!q) return true;
       return (
         f.name.toLowerCase().includes(q) || f.content.toLowerCase().includes(q)
@@ -210,9 +212,10 @@ export default function KnowledgePage() {
               clearInterval(uploadTimerRef.current);
               uploadTimerRef.current = null;
             }
-            // 上传完成:入库
+            // 上传完成:入库(选中「全部」时归入规范)
             const rawName = file.name.replace(/\.pdf$/i, "") || "未命名文档";
-            const folder: FolderId = selectedFolder;
+            const folder: FolderId =
+              selectedFolder === "all" ? "standard" : selectedFolder;
             setFiles((prev) => [
               {
                 id: `kf-upload-${++idRef.current}`,
