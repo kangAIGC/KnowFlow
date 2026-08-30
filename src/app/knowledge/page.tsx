@@ -28,11 +28,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -99,6 +98,8 @@ export default function KnowledgePage() {
   const [previewFile, setPreviewFile] = useState<KnowledgeFile | null>(null);
   // 本次导入的目标知识库,由「导入规范/导入图集」菜单项写入
   const importTargetRef = useRef<FolderId>("standard");
+  // 导入选项菜单(Popover 为 click 触发,兼容真实用户点击)
+  const [importOpen, setImportOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -249,8 +250,9 @@ export default function KnowledgePage() {
     [showStatus]
   );
 
-  /** 菜单选择导入目标后,打开文件选择器 */
+  /** 菜单选择导入目标后,关闭菜单并打开文件选择器 */
   const handleImportInto = (folder: FolderId) => {
+    setImportOpen(false);
     importTargetRef.current = folder;
     fileInputRef.current?.click();
   };
@@ -368,9 +370,9 @@ export default function KnowledgePage() {
                 </button>
               </div>
 
-              {/* 导入文件:深红实心,点击弹出 导入规范/导入图集 两个选项 */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              {/* 导入文件:深红实心,点击弹出 导入规范/导入图集 两个选项(Popover 基于 click,真实点击可开) */}
+              <Popover open={importOpen} onOpenChange={setImportOpen}>
+                <PopoverTrigger asChild>
                   <Button
                     variant="destructive"
                     size="sm"
@@ -380,18 +382,26 @@ export default function KnowledgePage() {
                     <Upload className="h-4 w-4" />
                     导入文件
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={() => handleImportInto("standard")}>
-                    <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-36 p-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleImportInto("standard")}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-muted"
+                  >
+                    <BookOpen className="h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
                     导入规范
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleImportInto("atlas")}>
-                    <ImageIcon className="h-4 w-4 text-destructive" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleImportInto("atlas")}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-muted"
+                  >
+                    <ImageIcon className="h-4 w-4 shrink-0 text-destructive" />
                     导入图集
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </button>
+                </PopoverContent>
+              </Popover>
               <input
                 ref={fileInputRef}
                 type="file"
