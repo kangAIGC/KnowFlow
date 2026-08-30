@@ -11,7 +11,11 @@ export default function Header() {
   // 客户端水合时不复现，触发 React Hydration Error #185。
   // 服务端/首帧统一返回 null，挂载后再渲染真实 UI，从根因上消除不一致。
   const mounted = useMounted();
-  const pathname = usePathname();
+  // 静态导出开启 trailingSlash 后 usePathname 会返回 "/search/" 之类带尾斜杠的路径,
+  // 统一去掉尾斜杠再比较,保证 /search 页也能正确命中激活态。
+  const rawPathname = usePathname();
+  const pathname =
+    rawPathname && rawPathname !== '/' ? rawPathname.replace(/\/+$/, '') : rawPathname || '/';
   const isActive = (target: string) => pathname === target;
 
   if (!mounted) return null;
