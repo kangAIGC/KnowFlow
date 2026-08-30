@@ -1,6 +1,7 @@
 "use client";
 
-import { Eye, Download, Trash2 } from "lucide-react";
+import { Eye, Download, Trash2, BookOpen, Image as ImageIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   KIND_LABELS,
   contentSnippet,
@@ -9,25 +10,23 @@ import {
   type FolderId,
   type KnowledgeFile,
 } from "@/lib/knowledge-data";
-import { applyBasePath, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
-/** 规范/图集的行首图标:直接复用站点首页已有的大尺寸插图,以图片区分知识库 */
-const FOLDER_ICONS: Record<FolderId, string> = {
-  standard: applyBasePath("/ill-4.png"),
-  atlas: applyBasePath("/ill-atlas-new.png"),
+/** 行首图标:规范=红色书本,图集=红色图片,与侧栏视觉语言一致 */
+const FOLDER_ICONS: Record<FolderId, LucideIcon> = {
+  standard: BookOpen,
+  atlas: ImageIcon,
 };
 
-function FolderImageIcon({ file }: { file: KnowledgeFile }) {
+function FolderIcon({ file }: { file: KnowledgeFile }) {
+  const Icon = FOLDER_ICONS[file.folder];
   return (
-    // 静态导出站点,无需 next/image 优化
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={FOLDER_ICONS[file.folder]}
-      alt=""
+    <span
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive dark:text-red-300"
       aria-hidden="true"
-      loading="lazy"
-      className="h-9 w-9 shrink-0 rounded-lg border border-border/40 object-cover"
-    />
+    >
+      <Icon className="h-5 w-5" />
+    </span>
   );
 }
 
@@ -143,7 +142,7 @@ export function FileListView({
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <FolderImageIcon file={file} />
+                    <FolderIcon file={file} />
                     <div className="min-w-0">
                       <div className="truncate text-xs font-medium text-foreground">
                         <HighlightText text={file.name} query={query} />
@@ -203,7 +202,7 @@ export function FileGridView({
             key={file.id}
             className="group flex flex-col rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
           >
-            <FolderImageIcon file={file} />
+            <FolderIcon file={file} />
             <div className="mt-3 line-clamp-2 min-h-[2.5rem] text-xs font-medium text-foreground">
               <HighlightText text={file.name} query={query} />
             </div>
