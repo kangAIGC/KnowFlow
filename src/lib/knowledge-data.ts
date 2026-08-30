@@ -189,17 +189,6 @@ export function contentSnippet(content: string, query: string): string | null {
   return `${start > 0 ? "…" : ""}${content.slice(start, end)}${end < content.length ? "…" : ""}`;
 }
 
-/** 生成新建虚拟文件的默认内容 */
-export function buildVirtualContent(
-  name: string,
-  kindLabel: string,
-  folderLabel: string,
-  extra?: string
-): string {
-  const base = `《${name}》\n类型:${kindLabel}\n所属:${folderLabel}\n\n`;
-  return base + (extra?.trim() ? extra.trim() : "本文档为在 KnowFlow 中在线新建的文档。");
-}
-
 /**
  * 生成一个仅含 ASCII 占位文字的最小合法 PDF(字节偏移按 1 字节/字符计算,全 ASCII 安全)。
  * 用于虚拟(在线新建/模拟入库)PDF 文档的下载,保证下载得到可正常打开的 .pdf 文件。

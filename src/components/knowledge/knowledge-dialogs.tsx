@@ -1,181 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FOLDERS,
   FOLDER_LABELS,
   KIND_LABELS,
-  buildVirtualContent,
   realFileUrl,
-  type FileKind,
-  type FolderId,
   type KnowledgeFile,
 } from "@/lib/knowledge-data";
-
-/* ---------------- 新建文件 ---------------- */
-
-export interface NewFileDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  /** 打开时默认选中的文件夹 */
-  defaultFolder: FolderId;
-  onCreate: (input: {
-    name: string;
-    kind: FileKind;
-    folder: FolderId;
-    content: string;
-  }) => void;
-}
-
-const NEW_KIND_LABEL = "PDF 文档";
-
-export function NewFileDialog({
-  open,
-  onOpenChange,
-  defaultFolder,
-  onCreate,
-}: NewFileDialogProps) {
-  const [name, setName] = useState("");
-  const [folder, setFolder] = useState<FolderId>(defaultFolder);
-  const [content, setContent] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  // 每次打开时重置表单,并同步默认文件夹
-  useEffect(() => {
-    if (open) {
-      setName("");
-      setFolder(defaultFolder);
-      setContent("");
-      setError(null);
-    }
-  }, [open, defaultFolder]);
-
-  const handleSubmit = () => {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setError("请输入文件名称");
-      return;
-    }
-    // 系统当前仅支持 PDF,固定以 PDF 类型创建
-    onCreate({ name: trimmed, kind: "pdf", folder, content });
-    onOpenChange(false);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader className="space-y-1">
-          <DialogTitle className="pr-8 text-base font-semibold">新建文件</DialogTitle>
-          <DialogDescription className="text-xs">
-            在知识库中创建一个新文档,可稍后在检索中引用
-          </DialogDescription>
-        </DialogHeader>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-          className="flex min-h-0 flex-1 flex-col gap-4"
-        >
-          <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="new-file-name" className="text-sm font-medium">
-              文件名称 <span className="text-destructive">*</span>
-            </label>
-            <Input
-              id="new-file-name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                if (error) setError(null);
-              }}
-              placeholder="例如:建筑防火规范读书笔记"
-              maxLength={60}
-              autoFocus
-            />
-            {error && <p className="text-xs text-destructive">{error}</p>}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <span className="text-sm font-medium">文件类型</span>
-              {/* 系统当前仅支持 PDF,以只读样式展示 */}
-              <div className="flex h-9 items-center rounded-md border border-border bg-muted/30 px-3 text-sm text-muted-foreground">
-                {NEW_KIND_LABEL}
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <span className="text-sm font-medium">所属文件夹</span>
-              <Select
-                value={folder}
-                onValueChange={(v) => setFolder(v as FolderId)}
-              >
-                <SelectTrigger aria-label="所属文件夹">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {FOLDERS.map((f) => (
-                    <SelectItem key={f.id} value={f.id}>
-                      {f.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label htmlFor="new-file-content" className="text-sm font-medium">
-              初始内容(可选)
-            </label>
-            <Textarea
-              id="new-file-content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="输入文档初始内容,内容将支持关键词检索"
-              rows={4}
-            />
-          </div>
-        </div>
-
-        <DialogFooter className="gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => onOpenChange(false)}
-          >
-            取消
-          </Button>
-          <Button type="submit" variant="destructive">
-            创建
-          </Button>
-        </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 /* ---------------- 文件预览 ---------------- */
 

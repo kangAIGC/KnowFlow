@@ -131,7 +131,6 @@ function KindIcon({ file }: { file: KnowledgeFile }) {
 export interface FileViewsProps {
   files: KnowledgeFile[];
   query: string;
-  searchScope: "name" | "content";
   onView: (file: KnowledgeFile) => void;
   onDownload: (file: KnowledgeFile) => void;
   onDelete: (file: KnowledgeFile) => void;
@@ -140,7 +139,6 @@ export interface FileViewsProps {
 export function FileListView({
   files,
   query,
-  searchScope,
   onView,
   onDownload,
   onDelete,
@@ -159,8 +157,7 @@ export function FileListView({
         </thead>
         <tbody>
           {files.map((file) => {
-            const snippet =
-              searchScope === "content" ? contentSnippet(file.content, query) : null;
+            const snippet = contentSnippet(file.content, query);
             return (
               <tr
                 key={file.id}
@@ -218,7 +215,6 @@ export function FileListView({
 export function FileGridView({
   files,
   query,
-  searchScope,
   onView,
   onDownload,
   onDelete,
@@ -226,8 +222,7 @@ export function FileGridView({
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {files.map((file) => {
-        const snippet =
-          searchScope === "content" ? contentSnippet(file.content, query) : null;
+        const snippet = contentSnippet(file.content, query);
         return (
           <div
             key={file.id}

@@ -12,7 +12,6 @@ import {
   LayoutGrid,
   List,
   Upload,
-  FolderPlus,
   X,
   CheckCircle,
   AlertCircle,
@@ -38,19 +37,13 @@ import {
   FileListView,
   FileGridView,
 } from "@/components/knowledge/file-views";
-import {
-  NewFileDialog,
-  PreviewDialog,
-} from "@/components/knowledge/knowledge-dialogs";
+import { PreviewDialog } from "@/components/knowledge/knowledge-dialogs";
 import {
   FOLDER_LABELS,
-  KIND_LABELS,
   INITIAL_FILES,
-  buildVirtualContent,
   downloadVirtualFile,
   realFileUrl,
   todayLabel,
-  type FileKind,
   type FolderId,
   type KnowledgeFile,
 } from "@/lib/knowledge-data";
@@ -60,7 +53,6 @@ const PAGE_SIZE = 8;
 
 type SortKey = "modified-desc" | "modified-asc" | "name-asc" | "size-desc" | "size-asc";
 type ViewMode = "list" | "grid";
-type SearchScope = "name" | "content";
 
 interface UploadTask {
   name: string;
@@ -80,12 +72,6 @@ const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
   { value: "size-asc", label: "大小(小→大)" },
 ];
 
-// 系统当前仅收录 PDF 文件,类型筛选只保留 全部类型/PDF
-const TYPE_OPTIONS: Array<{ value: FileKind | "all"; label: string }> = [
-  { value: "all", label: "全部类型" },
-  { value: "pdf", label: "PDF" },
-];
-
 export default function KnowledgePage() {
   // 与站内其他页面一致:挂载后才渲染,规避 SSR/CSR 水合不一致
   const mounted = useMounted();
@@ -93,9 +79,7 @@ export default function KnowledgePage() {
   const [files, setFiles] = useState<KnowledgeFile[]>(INITIAL_FILES);
   const [selectedFolder, setSelectedFolder] = useState<FolderId>("standard");
   const [query, setQuery] = useState("");
-  const [searchScope, setSearchScope] = useState<SearchScope>("name");
   const [sortKey, setSortKey] = useState<SortKey>("modified-desc");
-  const [typeFilter, setTypeFilter] = useState<FileKind | "all">("all");
   const [view, setView] = useState<ViewMode>("list");
   const [page, setPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -103,7 +87,6 @@ export default function KnowledgePage() {
   const [uploadTask, setUploadTask] = useState<UploadTask | null>(null);
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const [previewFile, setPreviewFile] = useState<KnowledgeFile | null>(null);
-  const [newDialogOpen, setNewDialogOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -134,14 +117,12 @@ export default function KnowledgePage() {
     [files]
   );
 
-  // 过滤 → 搜索(名称/内容) → 排序
+  // 过滤(名称+内容联合匹配)→ 排序
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = files.filter((f) => {
       if (f.folder !== selectedFolder) return false;
-      if (typeFilter !== "all" && f.kind !== typeFilter) return false;
       if (!q) return true;
-      if (searchScope === "name") return f.name.toLowerCase().includes(q);
       return (
         f.name.toLowerCase().includes(q) || f.content.toLowerCase().includes(q)
       );
@@ -165,7 +146,7 @@ export default function KnowledgePage() {
         break;
     }
     return sorted;
-  }, [files, selectedFolder, typeFilter, query, searchScope, sortKey]);
+  }, [files, selectedFolder, query, sortKey]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -177,7 +158,7 @@ export default function KnowledgePage() {
   // 筛选条件变化时回到第一页
   useEffect(() => {
     setPage(1);
-  }, [selectedFolder, query, searchScope, sortKey, typeFilter]);
+  }, [selectedFolder, query, sortKey]);
 
   /* ---------------- 文件操作 ---------------- */
 
@@ -273,33 +254,6 @@ export default function KnowledgePage() {
     startSimulatedUpload(file);
   };
 
-  /* ---------------- 新建文件 ---------------- */
-
-  const handleCreate = useCallback(
-    (input: { name: string; kind: FileKind; folder: FolderId; content: string }) => {
-      setFiles((prev) => [
-        {
-          id: `kf-new-${++idRef.current}`,
-          name: input.name,
-          kind: input.kind,
-          folder: input.folder,
-          sizeKB: Math.max(1, Math.ceil(input.content.length / 512)),
-          modifiedLabel: todayLabel(),
-          modifiedTs: Date.now(),
-          content: buildVirtualContent(
-            input.name,
-            KIND_LABELS[input.kind],
-            FOLDER_LABELS[input.folder],
-            input.content
-          ),
-        },
-        ...prev,
-      ]);
-      showStatus({ type: "success", message: `已创建「${input.name}」` });
-    },
-    [showStatus]
-  );
-
   if (!mounted) return null;
 
   const rangeStart = filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
@@ -328,41 +282,13 @@ export default function KnowledgePage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {/* 搜索范围切换:名称 / 内容 */}
-            <div className="flex overflow-hidden rounded-lg border border-border">
-              {(
-                [
-                  { value: "name", label: "名称" },
-                  { value: "content", label: "内容" },
-                ] as Array<{ value: SearchScope; label: string }>
-              ).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setSearchScope(opt.value)}
-                  className={cn(
-                    "px-3 py-2 text-xs font-medium transition-colors",
-                    searchScope === opt.value
-                      ? "bg-destructive/10 text-destructive"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-
-            {/* 搜索框 */}
+            {/* 搜索框(同时匹配名称与内容) */}
             <div className="relative min-w-[180px] flex-1 sm:max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={
-                  searchScope === "name"
-                    ? "搜索文件名称..."
-                    : "搜索文件内容关键词,如:防火分区、檐沟..."
-                }
+                placeholder="搜索文件名称或内容关键词,如:防火分区、檐沟..."
                 className="pl-9"
                 aria-label="搜索文档"
               />
@@ -387,23 +313,6 @@ export default function KnowledgePage() {
                 </SelectTrigger>
                 <SelectContent>
                   {SORT_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value} className="text-xs">
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* 类型筛选 */}
-              <Select
-                value={typeFilter}
-                onValueChange={(v) => setTypeFilter(v as FileKind | "all")}
-              >
-                <SelectTrigger className="h-9 w-[110px] text-xs" aria-label="类型筛选">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TYPE_OPTIONS.map((o) => (
                     <SelectItem key={o.value} value={o.value} className="text-xs">
                       {o.label}
                     </SelectItem>
@@ -462,17 +371,6 @@ export default function KnowledgePage() {
                 onChange={handleFileInputChange}
                 aria-hidden="true"
               />
-
-              {/* 新建:红色实心,与站点主色一致 */}
-              <Button
-                variant="destructive"
-                size="sm"
-                className="h-9 gap-1.5"
-                onClick={() => setNewDialogOpen(true)}
-              >
-                <FolderPlus className="h-4 w-4" />
-                新建
-              </Button>
             </div>
           </div>
         </div>
@@ -544,17 +442,14 @@ export default function KnowledgePage() {
                 <div>
                   <p className="font-medium text-foreground">未找到匹配的文档</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    试试更换关键词、切换「名称/内容」搜索范围或调整筛选条件
+                    试试更换关键词或调整排序方式
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                  onClick={() => {
-                    setQuery("");
-                    setTypeFilter("all");
-                  }}
+                  onClick={() => setQuery("")}
                 >
                   清除筛选条件
                 </Button>
@@ -563,7 +458,6 @@ export default function KnowledgePage() {
               <FileListView
                 files={pageFiles}
                 query={query}
-                searchScope={searchScope}
                 onView={handleView}
                 onDownload={handleDownload}
                 onDelete={handleDelete}
@@ -572,7 +466,6 @@ export default function KnowledgePage() {
               <FileGridView
                 files={pageFiles}
                 query={query}
-                searchScope={searchScope}
                 onView={handleView}
                 onDownload={handleDownload}
                 onDelete={handleDelete}
@@ -639,12 +532,6 @@ export default function KnowledgePage() {
       </div>
 
       {/* 弹窗 */}
-      <NewFileDialog
-        open={newDialogOpen}
-        onOpenChange={setNewDialogOpen}
-        defaultFolder={selectedFolder}
-        onCreate={handleCreate}
-      />
       <PreviewDialog file={previewFile} onOpenChange={(o) => !o && setPreviewFile(null)} />
     </div>
   );
